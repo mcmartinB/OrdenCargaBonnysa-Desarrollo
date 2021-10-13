@@ -1,0 +1,11 @@
+[BDDATA]
+ALIAS=comer.informix_tfe
+USERNAME=info	
+PASSWORD=unix1q2w
+
+[PORDEFECTO]
+EMPRESA=050
+CENTRO=6
+
+[DIRECTORIOS]
+TEMP=c:\pepe

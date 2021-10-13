@@ -1,0 +1,207 @@
+
+
+CREATE TABLE frf_orden_carga (
+  contador_oc INTEGER DEFAULT 0 NOT NULL
+);
+
+
+CREATE TABLE frf_orden_carga_c (
+  orden_occ INTEGER NOT NULL,
+
+  empresa_occ CHAR(3) NOT NULL,
+  centro_salida_occ CHAR(1) NOT NULL,
+  n_albaran_occ INTEGER NOT NULL,
+  fecha_occ DATE NOT NULL,
+  hora_occ CHAR(5),
+  cliente_sal_occ CHAR(3),
+  dir_sum_occ CHAR(3),
+  cliente_fac_occ CHAR(3),
+  n_pedido_occ CHAR(15),
+  moneda_occ CHAR(3),
+  transporte_occ SMALLINT,
+  vehiculo_occ CHAR(20),
+  nota_occ CHAR(256),
+  status_occ INTEGER DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ PRIMARY KEY (orden_occ) 
+ CONSTRAINT porden_carga_c
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ FOREIGN KEY (empresa_occ,centro_salida_occ) 
+ REFERENCES frf_centros
+ CONSTRAINT acentros_occ
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ FOREIGN KEY (empresa_occ,cliente_sal_occ) 
+ REFERENCES frf_clientes
+ CONSTRAINT aclientesfac_occ
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ FOREIGN KEY (empresa_occ,cliente_fac_occ) 
+ REFERENCES frf_clientes
+ CONSTRAINT aclienteslsal_occ
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ FOREIGN KEY (moneda_occ) 
+ REFERENCES frf_monedas
+ CONSTRAINT amonedas_occ
+
+ALTER TABLE frf_orden_carga_c ADD CONSTRAINT 
+ FOREIGN KEY (empresa_occ,transporte_occ) 
+ REFERENCES frf_transportistas
+ CONSTRAINT atransportista_occ
+
+
+
+
+
+
+CREATE TABLE frf_orden_carga_l (
+  orden_ocl INTEGER NOT NULL,
+  linea_ocl INTEGER NOT NULL,
+ 
+  empresa_ocl CHAR(3) NOT NULL,
+  centro_salida_ocl CHAR(1) NOT NULL,
+  n_albaran_ocl INTEGER NOT NULL,
+  fecha_ocl DATE NOT NULL,
+  centro_origen_ocl CHAR(1) NOT NULL,
+  producto_ocl CHAR(1) NOT NULL,
+  envase_ocl CHAR(3) NOT NULL,
+  marca_ocl CHAR(2) NOT NULL,
+  categoria_ocl CHAR(2),
+  calibre_ocl CHAR(6) NOT NULL,
+  color_ocl CHAR(1) NOT NULL,
+  ref_transitos_ocl INTEGER,
+  cajas_ocl INTEGER,
+  kilos_ocl DECIMAL(10,2),
+  precio_ocl DECIMAL(8,3),
+  unidad_precio_ocl CHAR(3),
+  importe_neto_ocl DECIMAL(10,2),
+  porc_iva_ocl DECIMAL(5,2),
+  iva_ocl DECIMAL(10,2),
+  importe_total_ocl DECIMAL(12,2),
+  n_palets_ocl SMALLINT,
+  tipo_palets_ocl CHAR(2),
+  tipo_iva_ocl CHAR(2),
+  federacion_ocl CHAR(1),
+  cliente_ocl CHAR(3),
+  emp_procede_ocl CHAR(3)
+)
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ PRIMARY KEY (orden_ocl, linea_ocl) 
+ CONSTRAINT porden_carga_l
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (orden_ocl) 
+ REFERENCES frf_orden_carga_c
+ CONSTRAINT aorden_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (emp_procede_ocl) 
+ REFERENCES frf_empresas
+ CONSTRAINT aempresas2_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (empresa_ocl,producto_ocl,calibre_ocl) 
+ REFERENCES frf_calibres
+ CONSTRAINT acalibres_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (empresa_ocl,producto_ocl,categoria_ocl) 
+ REFERENCES frf_categorias
+ CONSTRAINT acategorias_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (empresa_ocl,centro_origen_ocl) 
+ REFERENCES frf_centros
+ CONSTRAINT acentros_org_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (empresa_ocl,producto_ocl,color_ocl) 
+ REFERENCES frf_colores
+ CONSTRAINT acolores_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (tipo_iva_ocl) 
+ REFERENCES frf_impuestos
+ CONSTRAINT aimpuestos_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (marca_ocl) 
+ REFERENCES frf_marcas
+ CONSTRAINT amarcas_ocl
+
+ALTER TABLE frf_orden_carga_l ADD CONSTRAINT 
+ FOREIGN KEY (tipo_palets_ocl) 
+ REFERENCES frf_tipo_palets
+ CONSTRAINT atipopalets_ocl
+
+
+
+
+
+CREATE TABLE frf_packing_list (
+ orden_pl INTEGER NOT NULL,
+ fecha_alta_pl DATE NOT NULL,
+ hora_alta_pl CHAR(10) NOT NULL,
+ empresa_pl CHAR(3) NOT NULL,
+ producto_base_pl SMALLINT NOT NULL,
+ producto_pl CHAR(1) NOT NULL,  
+ ean128_pl CHAR (20) NOT NULL,
+ ean13_pl CHAR(13) NOT NULL,
+ envase_pl CHAR(3),
+ cajas_pl INTEGER,
+ calibre_pl CHAR(6),
+ color_pl CHAR(1),
+ le_pl CHAR(2),
+ peso_pl DECIMAL(6,2),
+ tipo_palet_pl CHAR(2),
+ cliente_pl CHAR(3),
+ dir_sum_pl CHAR(3),
+ fecha_carga_pl	DATE, 
+ hora_carga_pl CHAR(10)
+)
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (orden_pl) 
+ REFERENCES frf_orden_carga_c
+ CONSTRAINT aorden_carga_pl;
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (tipo_palet_pl) 
+ REFERENCES frf_tipo_palets
+ CONSTRAINT atipo_palet_pl;
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (empresa_pl, producto_base_pl) 
+ REFERENCES frf_productos_base
+ CONSTRAINT aproducto_base_pl;
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (empresa_pl, cliente_pl) 
+ REFERENCES frf_clientes
+ CONSTRAINT acliente_pl;
+ 
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (empresa_pl, producto_pl, calibre_pl) 
+ REFERENCES frf_calibres
+ CONSTRAINT acalibre_pl; 
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (empresa_pl, producto_pl, color_pl) 
+ REFERENCES frf_colores
+ CONSTRAINT acolor_pl; 
+ 
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (ean13_pl, empresa_pl, producto_base_pl, calibre_pl) 
+ REFERENCES frf_ean13
+ CONSTRAINT aean13_pl; 
+
+ALTER TABLE frf_packing_list ADD CONSTRAINT 
+ FOREIGN KEY (envase_pl, empresa_pl) 
+ REFERENCES frf_envases
+ CONSTRAINT aenvase_pl; 

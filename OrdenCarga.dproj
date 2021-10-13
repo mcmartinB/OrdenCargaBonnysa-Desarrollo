@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{f106f811-e845-49be-bd36-258570da134c}</ProjectGuid>
+    <MainSource>OrdenCarga.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>OrdenCarga.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG</DCC_Define>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3082</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">OrdenCarga.dpr</Source></Source><TypeLibOptions><TypeLibOptions Name="AutoRegisterTLB">False</TypeLibOptions><TypeLibOptions Name="AutoGenImportAssembly">False</TypeLibOptions></TypeLibOptions></Delphi.Personality><ModelSupport>False</ModelSupport></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="OrdenCarga.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="..\..\GComer Desarrollo Git\Comun\SincronizacionWeb\ConexionAWSAurora.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo Git\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo Gi\Comun\SincronizacionWeb\ConexionAWSAurora.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo Gi\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo G\Comun\SincronizacionWeb\ConexionAWSAurora.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo G\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo it\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo i\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo \Comun\SincronizacionWeb\ConexionAWSAurora.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo \Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo\Comun\SincronizacionWeb\ConexionAWSAurora.pas" />
+    <DCCReference Include="..\..\GComer Desarrollo\Comun\SincronizacionWeb\ConexionAWSAuroraConstantes.pas" />
+    <DCCReference Include="..\Comun\dmImportarOrdenes.pas">
+      <DesignClass>TDataModule</DesignClass>
+      <Form>FDMImportarOrdenes</Form>
+    </DCCReference>
+    <DCCReference Include="..\Comun\UFImportarOrdenes.pas">
+      <Form>FImportarOrdenes</Form>
+    </DCCReference>
+    <DCCReference Include="..\Comun\UTipos.pas" />
+    <DCCReference Include="AdvertenciaFD.pas">
+      <Form>FDAdvertencia</Form>
+    </DCCReference>
+    <DCCReference Include="C:\Comun\dmImportarOrdenes.pas">
+      <DesignClass>TDataModule</DesignClass>
+      <Form>FDMImportarOrdenes</Form>
+    </DCCReference>
+    <DCCReference Include="C:\Comun\UFImportarOrdenes.pas">
+      <Form>FImportarOrdenes</Form>
+    </DCCReference>
+    <DCCReference Include="C:\Comun\UTipos.pas" />
+    <DCCReference Include="CGlobal.pas" />
+    <DCCReference Include="Comun\dmImportarOrdenes.pas">
+      <Form>FDMImportarOrdenes</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="Comun\UFImportarOrdenes.pas">
+      <Form>FImportarOrdenes</Form>
+    </DCCReference>
+    <DCCReference Include="Comun\UTipos.pas" />
+    <DCCReference Include="OrdenCarga_TLB.pas" />
+    <DCCReference Include="UDDescripciones.pas">
+      <Form>DDescripciones</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="UDListados.pas">
+      <Form>DListados</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="UDOrdenCarga.pas">
+      <Form>DOrdenCarga</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="UDTraspasar.pas">
+      <Form>DTraspasar</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="UFAsignarAlbaran.pas">
+      <Form>FAsignarAlbaran</Form>
+    </DCCReference>
+    <DCCReference Include="UFAsignarTransito.pas">
+      <Form>FAsignarTransito</Form>
+    </DCCReference>
+    <DCCReference Include="UFCalendario.pas">
+      <Form>FCalendario</Form>
+    </DCCReference>
+    <DCCReference Include="UFClientes.pas">
+      <Form>FClientes</Form>
+    </DCCReference>
+    <DCCReference Include="UFDistribuirPeso.pas">
+      <Form>FDistribuirPesos</Form>
+    </DCCReference>
+    <DCCReference Include="UFFiltro.pas">
+      <Form>FFiltro</Form>
+    </DCCReference>
+    <DCCReference Include="UFOrdenCarga.pas">
+      <Form>FOrdenCarga</Form>
+    </DCCReference>
+    <DCCReference Include="UFRejilla.pas">
+      <Form>FRejilla</Form>
+    </DCCReference>
+    <DCCReference Include="UFResumen.pas">
+      <Form>FResumen</Form>
+    </DCCReference>
+    <DCCReference Include="UFSuministros.pas">
+      <Form>FSuministros</Form>
+    </DCCReference>
+    <DCCReference Include="UFTransportistas.pas">
+      <Form>FTransportistas</Form>
+    </DCCReference>
+    <DCCReference Include="UQOrdenCompleta.pas">
+      <Form>QOrdenCompleta</Form>
+      <DesignClass>TQuickRep</DesignClass>
+    </DCCReference>
+    <DCCReference Include="UQOrdenPackingSimple.pas">
+      <Form>QOrdenPackingSimple</Form>
+      <DesignClass>TQuickRep</DesignClass>
+    </DCCReference>
+  </ItemGroup>
+</Project>

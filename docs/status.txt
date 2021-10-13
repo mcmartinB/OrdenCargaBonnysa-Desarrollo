@@ -1,0 +1,13 @@
+frf_orden_carga_c.status_occ
+----------------------------
+0:Creada -> Encara no se puede iniciar la carga
+1:Activa -> Ya se puede iniciar la carga
+2:Inicializada -> Se empezao la carga
+3:Finalizada -> Camion cargado
+
+frf_orden_carga_c.traspasada_occ
+--------------------------------
+(status_occ=3[Finalizada])
+0:No traspasada
+1:Salida creada
+2:Transito creado
