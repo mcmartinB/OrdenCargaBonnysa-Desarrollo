@@ -66,6 +66,7 @@ type
     MarcarTodosBtn: TButton;
     DesmarcarTodosBtn: TButton;
     cxGrid1DBTableView1Column11: TcxGridDBColumn;
+    cxGrid1DBTableView1Column12: TcxGridDBColumn;
     procedure FormShow(Sender: TObject);
     procedure sbImportarClick(Sender: TObject);
     procedure sbSalirClick(Sender: TObject);
@@ -286,19 +287,22 @@ begin
     RegistrosADescargar := 0;
 
     selcolidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('sel').Index;
-    ordercolidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('orden').Index;
-
+    ordercolidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('id_orden').Index;
+    //lee cuantos registros hay para descargar
     for i := 0 to self.cxGrid1DBTableView1.DataController.RecordCount -1 do
     begin
-      if (self.cxGrid1DBTableView1.DataController.Values[i, selcolidx] = 1) then inc(RegistrosADescargar);
+      if (self.cxGrid1DBTableView1.DataController.Values[i, selcolidx] = 1) then
+        inc(RegistrosADescargar);
 
     end;
 
+    //si no hay ninguno, acaba
     if RegistrosADescargar <=0 then
     begin
       ShowMessage('No hay ordenes seleccionadas');
       exit;
     end;
+
 
     if MessageBox(
       Self.Handle,
@@ -316,17 +320,22 @@ begin
 
        FDMImportarOrdenes.Inicializar(RegistrosADescargar);
 
-
+       //descarga cada una de las órdenes
        for I := 0 to  self.cxGrid1DBTableView1.DataController.RecordCount -1 do
        begin
-
+          //si hay una orden para descargar
          if (self.cxGrid1DBTableView1.DataController.Values[i, selcolidx] = 1) then
          begin
+          //recupera el id de la orden
+          if self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx] = null then
+              orden_occ := 0
+          else
+              orden_occ := self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx];
 
-           orden_occ := self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx];
-           self.cxGrid1DBTableView1.DataController.SetValue(i, selcolidx, 0);
-
-           if (FDMImportarOrdenes.Descargar(orden_occ) = true) then  self.cxGrid1DBTableView1.DataController.SetValue(i,0,0);
+          self.cxGrid1DBTableView1.DataController.SetValue(i, selcolidx, 0);
+           //si la orden se ha descargado del AWS (web de pedidos), a la bbdd del almacén
+           if (FDMImportarOrdenes.Descargar(orden_occ) = true) then
+              self.cxGrid1DBTableView1.DataController.SetValue(i,0,0);
          end;
       end;
 
@@ -366,7 +375,7 @@ begin
     qMuestraCargas.close;
     qMuestraCargas.Params.Clear;
     qMuestraCargas.sql.clear;
-    qMuestraCargas.sql.add('select 0 as sel, empresa_occ AS Empresa,  orden_occ AS Orden, fecha_occ as Fecha, cliente_sal_occ as Cliente, c.nombre_c,');
+    qMuestraCargas.sql.add('select 0 as sel, o.id as id_orden, empresa_occ AS Empresa,  orden_occ AS Orden, fecha_occ as Fecha, cliente_sal_occ as Cliente, c.nombre_c,');
     qMuestraCargas.sql.add('dir_sum_occ as  Direccion, d.nombre_ds, n_pedido_bonnysa_occ as Pedido,');
     qMuestraCargas.sql.add('n_pedido_occ as PedidoCliente, ''desconocido'' as Transporte');
     qMuestraCargas.sql.add('from frf_orden_carga_c o');
@@ -426,12 +435,15 @@ var
 begin
   self.cxGrid1DBTableView1.BeginUpdate();
 
-  ordercolidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('orden').Index;
+  ordercolidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('id_orden').Index;
   transidx := self.cxGrid1DBTableView1.DataController.GetItemByFieldName('Transporte').Index;
 
    for I := 0 to  self.cxGrid1DBTableView1.DataController.RecordCount -1 do
        begin
-           orden_occ := self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx];
+           if self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx] = null then
+              orden_occ := 0
+           else
+              orden_occ := self.cxGrid1DBTableView1.DataController.Values[i, ordercolidx];
 
            desc_trans := self.GetTransportistaOrdenCarga(orden_occ);
            self.cxGrid1DBTableView1.DataController.SetValue(i, transidx, desc_trans);

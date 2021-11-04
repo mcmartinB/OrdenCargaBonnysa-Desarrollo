@@ -29,10 +29,9 @@ type
     FConexionAurora: TConexionAWSAurora;
     FConexionDestino: TDataBase;
 
-    FQSelOrdenCab: TSimpleDataset;
+    FQSelOrdenCab, FQSelOrdenLin: TSimpleDataset;
 
     FQSelOrdenCabCount,
-    FQSelOrdenLin,
     FQSelPacking: TSQLQuery;
 
     FQExisteOrdenCab,
@@ -45,8 +44,8 @@ type
     FCentroDTO: TCentroDTO;
 
   protected
-    procedure CargarCabecera;
-    procedure CargarLineas(orden_occ: Integer);
+    procedure CargarCabecera (const orden_occ: integer);
+    procedure CargarLineas(orden_occ, contador: Integer);
     procedure CargarPackingList(orden_occ: Integer);
 
     procedure Log(const Mensaje: String);
@@ -62,8 +61,8 @@ type
 
     function AbrirOrdenCargaIfx(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TQuery;
     function AbrirOrdenCargaDetIfx(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TQuery;
-    function AbrirOrdenCargaAurora(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TSQLQuery;
-    function AbrirOrdenCargaDetAurora(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TSQLQuery;
+    function AbrirOrdenCargaAurora(empresa, centro, fecha : string; orden_occ : integer) : TSimpleDataSet;
+    function AbrirOrdenCargaDetAurora(empresa, centro, fecha : string; orden_occ : integer) : TSimpleDataSet;
 
 
 
@@ -108,26 +107,39 @@ const
 { TFDMImportarOrdenes }
 
 
-procedure TFDMImportarOrdenes.CargarCabecera;
+procedure TFDMImportarOrdenes.CargarCabecera (const orden_occ: integer);
 begin
   with FQInsOrdenCab do
   begin
+    if not (FQSelOrdenCab.State in dseditModes) then FQSelOrdenCab.Edit;
+
+    FQSelOrdenCab.FieldByName('orden_occ').AsInteger := orden_occ;
+    FQSelOrdenCab.FieldByName('n_albaran_occ').AsInteger := orden_occ;
+    FQSelOrdenCab.FieldByName('higiene_occ').AsInteger := 1;
+    FQSelOrdenCab.FieldByName('status_occ').AsInteger := 0;
+    FQSelOrdenCab.Post;
     AsingnarCamposAParametros(FQSelOrdenCab, FQInsOrdenCab);
     ExecSQL;
   end;
-
 end;
 
-procedure TFDMImportarOrdenes.CargarLineas(orden_occ: Integer);
+procedure TFDMImportarOrdenes.CargarLineas(orden_occ, contador: Integer);
 begin
   with FQInsOrdenLin do
   begin
     if FQSelOrdenLin.Active then
       FQSelOrdenLin.Close;
-    FQSelOrdenLin.ParamByName('orden_occ').asInteger := orden_occ;
+
+    FQSelOrdenLin.Dataset.Params.ParamByName('orden_occ').AsInteger := orden_occ;
     FQSelOrdenLin.Open;
     while not FQSelOrdenLin.eof do
     begin
+     if not (FQSelOrdenLin.State in dseditModes) then FQSelOrdenLin.Edit;
+      FQSelOrdenLin.FieldByName('orden_ocl').AsInteger := contador;
+      FQSelOrdenLin.FieldByName('n_albaran_ocl').AsInteger := contador;
+      FQSelOrdenLin.FieldByName('centro_origen_ocl').AsInteger := FQSelOrdenLin.FieldByName('centro_salida_ocl').AsInteger;
+      FQSelOrdenLin.Post;
+
       AsingnarCamposAParametros(FQSelOrdenLin, FQInsOrdenLin);
       ExecSQL;
 
@@ -167,13 +179,13 @@ begin
   FConexionDestino := ADatabase;
 
   FQSelOrdenCab := FConexionAurora.NewSimpleDataset(Self);
-  FQSelOrdenCab.Dataset.CommandText := 'select * from frf_orden_carga_c where empresa_occ = :empresa_occ and centro_salida_occ = :centro_salida_occ and orden_occ = :orden_occ and status_occ = :status_occ';
+  FQSelOrdenCab.Dataset.CommandText := 'select * from frf_orden_carga_c where empresa_occ = :empresa_occ and centro_salida_occ = :centro_salida_occ and id = :id and status_occ = :status_occ';
 
   FQSelOrdenCabCount := FConexionAurora.NewSQLQuery(Self);
   FQSelOrdenCabCount.CommandText := 'select count(*) as total from frf_orden_carga_c where empresa_occ = :empresa_occ and centro_salida_occ = :centro_salida_occ and  traspasada_occ = :traspasada_occ';
 
-  FQSelOrdenLin  := FConexionAurora.NewSQLQuery(Self);
-  FQSelOrdenLin.CommandText := 'select * from frf_orden_carga_l where orden_ocl = :orden_occ';
+  FQSelOrdenLin  := FConexionAurora.NewSimpleDataset(Self);
+  FQSelOrdenLin.Dataset.CommandText := 'select * from frf_orden_carga_l where frf_orden_carga_c_id = :orden_occ';
 
   FQSelPacking := FConexionAurora.NewSQLQuery(Self);
   FQSelPacking.CommandText := 'select * from frf_packing_list where orden_pl = :orden_occ';
@@ -554,10 +566,8 @@ begin
     lin := nil;
     try
       registro.edit;
-      registro.fieldbyname('orden_occ').asinteger := nuevo_contador;
+      registro.fieldbyname('orden_occ').asinteger := nuevo_contador ;
       registro.post;
-
-
 
       lin := self.AbrirOrdenCargaDetIfx(registro.fieldbyname('empresa_occ').asstring,
         registro.fieldbyname('centro_salida_occ').asstring,
@@ -580,7 +590,6 @@ begin
           Log('Error al actulizar la tabla orden_carga en Informix: '+e.message);
         end;
       end;
-
       lin.close;
   finally
       FreeAndNil(lin);
@@ -675,22 +684,25 @@ begin
   try
     lin := nil;
     try
+      //cabecera de la orden de Aurora
       registro.edit;
       registro.fieldbyname('orden_occ').asinteger := nuevo_contador;
       registro.fieldbyname('updated_at').asdatetime := now;
+      registro.fieldbyname('status_occ').asInteger := 0;
       registro.post;
 
-      lin := self.AbrirOrdenCargaDetIfx(registro.fieldbyname('empresa_occ').asstring,
+      //líneas de la orden de informix
+      lin := self.AbrirOrdenCargaDetAurora(registro.fieldbyname('empresa_occ').asstring,
         registro.fieldbyname('centro_salida_occ').asstring,
-        registro.fieldbyname('fecha_occ').asdatetime,
-        registro.fieldbyname('orden_occ').asinteger);
+        registro.fieldbyname('fecha_occ').asstring,
+        registro.fieldbyname('id').asinteger);
 
       lin.first;
 
       while not lin.eof do
       begin
           lin.edit;
-          lin.FieldByName('orden_occ').asinteger := nuevo_contador;
+          lin.FieldByName('orden_ocl').asinteger := nuevo_contador;
           lin.fieldbyname('updated_at').asdatetime := now;
           lin.post;
           lin.next;
@@ -701,7 +713,7 @@ begin
       except
         ON E : exception do
         begin
-          Log('Error al actulizar la tabla orden_carga en Informix: '+e.message);
+          Log('Error al actualizar la tabla orden_carga en Aurora: '+e.message);
         end;
       end;
   finally
@@ -710,12 +722,13 @@ begin
 end;
 
 
-
+//funcion que descarga una orden de Aurora AWS
 function TFDMImportarOrdenes.Descargar(orden_occ : integer) : boolean;
 var
   correcto : boolean;
   nuevo_contador : integer;
   ifxdst, auroradst : TDataset;
+  sGrupoEmpresa: String;
 begin
   correcto := false;
 
@@ -726,41 +739,46 @@ begin
       FQSelOrdenCab.Close;
       FQSelOrdenCab.Dataset.Params.ParamByName('empresa_occ').asString := FCentroDTO.EmpresaCodigo;
       FQSelOrdenCab.Dataset.Params.ParamByName('centro_salida_occ').asString := FCentroDTO.CentroCodigo;
-      FQSelOrdenCab.Dataset.Params.ParamByName('orden_occ').asinteger := orden_occ;
+      FQSelOrdenCab.Dataset.Params.ParamByName('id').asinteger := orden_occ;
       FQSelOrdenCab.Dataset.Params.ParamByName('status_occ').asInteger := 4;
+      //busca la orden en
       FQSelOrdenCab.Open;
       Log('Conectado a servidor web.');
-
-
 
       //RegistrosTotales := RegistrosAProcesar;
       Log(Format('Procesando %d orden de carga', [ orden_occ ]));
       while not FQSelOrdenCab.eof do
       begin
-        orden_occ := FQSelOrdenCab.FieldByName('orden_occ').AsInteger;
-        if not ExisteOrden(orden_occ) then
-        begin
+//        orden_occ := FQSelOrdenCab.FieldByName('orden_occ').AsInteger;
+//        if not ExisteOrden(orden_occ) then
+//        begin
           FConexionDestino.StartTransaction;
           try
-            CargarCabecera;
-            CargarLineas(orden_occ);
-            CargarPackingList(orden_occ);
+            if FCentroDTO.EmpresaCodigo = '050' then
+              sGrupoEmpresa := 'SAT'
+            else
+              sGrupoEmpresa := 'BAG';
+
+            nuevo_contador := self.GenerarContadorInformix(sGrupoEmpresa);
+
+            CargarCabecera(nuevo_contador);
+            CargarLineas(orden_occ, nuevo_contador);
+//            CargarPackingList(orden_occ);
 
   //          if FQSelOrdenCab.FieldByName('orden_occ').asInteger in [20, 30] then
   //            raise Exception.Create('Error provocado a posta');
 
-            nuevo_contador := self.GenerarContadorInformix(FCentroDTO.EmpresaCodigo);
+                     //recoge los datos de la orden en informix
+//            ifxdst := self.AbrirOrdenCargaIfx(FQSelOrdenCab.FieldByName('empresa_occ').asstring,
+//                   FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
+//                    FQSelOrdenCab.FieldByName('fecha_occ').asdatetime,
+//                    orden_occ);
+//
+//             //Asigna el nuevo contador a la orden
+//             self.CambiarContadorInformix(ifxdst, nuevo_contador);
 
-            ifxdst := self.AbrirOrdenCargaIfx(FQSelOrdenCab.FieldByName('empresa_occ').asstring,
-                   FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
-                    FQSelOrdenCab.FieldByName('fecha_occ').asdatetime,
-                    orden_occ);
-
-
-             self.CambiarContadorInformix(ifxdst, nuevo_contador);
-
-             ifxdst.close;
-             FreeAndNil(ifxdst);
+//             ifxdst.close;
+//             FreeAndNil(ifxdst);
 
 
             FConexionDestino.Commit;
@@ -768,8 +786,8 @@ begin
 
             try
               auroradst := self.AbrirOrdenCargaAurora(FQSelOrdenCab.FieldByName('empresa_occ').asstring,
-                   FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
-                    FQSelOrdenCab.FieldByName('fecha_occ').asdatetime,
+                    FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
+                    FQSelOrdenCab.FieldByName('fecha_occ').asstring,
                     orden_occ);
 
               self.CambiarContadorAurora(auroradst, nuevo_Contador);
@@ -797,13 +815,14 @@ begin
               Log(Format('Error al importar orden %d (%s)', [ orden_occ, E.Message ]));
             end;
           end;
+{
         end
         else
         begin
           Log(Format('Warning: la orden %d ya existe', [ orden_occ ]));
           Inc(RegistrosErrores);
         end;
-
+}
         FQSelOrdenCab.Next;
         ProgressUpdate(RegistrosProcesados, RegistrosTotales);
       end;
@@ -821,6 +840,8 @@ begin
 
   result := correcto;
 end;
+
+
 
 destructor TFDMImportarOrdenes.Destroy;
 begin
@@ -871,33 +892,67 @@ begin
 end;
 
 
-procedure TFDMImportarOrdenes.AsingnarCamposAParametros(Source: TDataset; Destination: TQuery);
+//procedure TFDMImportarOrdenes.AsingnarCamposAParametros(Source: TDataset; Destination: TQuery);
+//var
+//  Ind:longint;
+//  SField: TField;
+//  DField: TParam;
+//begin
+//  for Ind:=0 to Destination.ParamCount - 1 do
+//   begin
+//     SField := Source.Fields[ Ind ];
+//     DField := Destination.Params.FindParam( SField.FieldName );
+//
+//     if (DField <> nil) {and (DField.FieldKind = fkData) and
+//        not DField.ReadOnly} then
+//        if SField.IsNull then
+//        begin
+//          Destination.ParamByName(SField.FieldName).Clear
+//        end
+//        else if (SField.DataType = ftString) {or
+//           (SField.DataType <> DField.DataType)} then
+//        begin
+//           Destination.ParamByName(SField.FieldName).asString := Trim(SField.AsString);
+//        end
+//        else
+//        begin
+//           Destination.ParamByName(SField.FieldName).Value := Trim(SField.Value);
+//        end;
+//   end;
+//end;
+                                                      //Source = Aurora -> select    Destination = Informix -> insert
+procedure TFDMImportarOrdenes.AsingnarCamposAParametros(Source: TDataset;            Destination: TQuery);
 var
   Ind:longint;
   SField: TField;
   DField: TParam;
 begin
-  for Ind:=0 to Destination.ParamCount - 1 do
+  for Ind:=0 to Source.FieldCount -1 do
    begin
+     //recoge el campo según posición
      SField := Source.Fields[ Ind ];
+     //Encuentra el parametro por nombre
      DField := Destination.Params.FindParam( SField.FieldName );
-
-     if (DField <> nil) {and (DField.FieldKind = fkData) and
-        not DField.ReadOnly} then
+     //si el campo del destino no es nil
+     if (DField <> nil) then
+        //si el campo es null
         if SField.IsNull then
-        begin
-          Destination.ParamByName(SField.FieldName).Clear
-        end
-        else if (SField.DataType = ftString) {or
-           (SField.DataType <> DField.DataType)} then
-        begin
-           Destination.ParamByName(SField.FieldName).asString := Trim(SField.AsString);
-        end
+          begin
+            //vacía el campo del destino
+            Destination.ParamByName(SField.FieldName).Clear
+          end
+              //si el tipo es string
+        else if (SField.DataType = ftString) then
+          begin
+            //añade el parámetro
+            Destination.ParamByName(SField.FieldName).asString := Trim(SField.AsString);
+          end
         else
-        begin
-           Destination.ParamByName(SField.FieldName).Value := Trim(SField.Value);
-        end;
-   end;
+          begin
+            //añade el parámetro como tipo distinto de string
+            Destination.ParamByName(SField.FieldName).Value := Trim(SField.Value);
+          end;
+     end;
 end;
 
 procedure TFDMImportarOrdenes.Inicializar(TotalRegistros : integer);
@@ -953,8 +1008,10 @@ begin
       try
         q1 := TQuery.Create(nil);
         q1.DatabaseName := 'Database';
+        q1.RequestLive := true;
         q1.SQL.add('select * from  frf_orden_carga');
         q1.sql.add('where empresa_oc = :p1');
+        q1.parambyname('p1').AsString := empresa_occ;
         q1.prepare;
 
         q1.Open;
@@ -965,6 +1022,7 @@ begin
           contador := q1.fieldbyname('contador_oc').asinteger;
           q1.fieldbyname('contador_oc').asinteger := contador + 1;
           q1.post;
+          q1.Next;
         end;
 
         q1.close;
@@ -978,6 +1036,8 @@ begin
   finally
     FreeAndNil(q1);
   end;
+
+  result := contador;
 end;
 
 function TFDMIMportarOrdenes.CambiarEstadoAurora(registro : TDataset; status_occ : integer) : integer;
@@ -1000,6 +1060,8 @@ begin
 end;
 
 
+
+
 function TFDMIMportarOrdenes.AbrirOrdenCargaIfx(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TQuery;
 var
   q : TQuery;
@@ -1014,11 +1076,12 @@ begin
     q.sql.add('and fecha_occ = :p2');
     q.sql.add('and orden_occ = :p3');
 
-    q.params[0].asstring := empresa;
-    q.params[1].asstring := centro;
-    q.params[2].asdatetime := fecha;
-    q.params[3].asinteger := orden_occ;
+    q.ParamByName('p0').asstring := empresa;
+    q.ParamByName('p1').asstring := centro;
+    q.ParamByName('p2').asdatetime := fecha;
+    q.ParamByName('p3').asinteger := orden_occ;
 
+    q.RequestLive := true;  //Quitar el read only
     q.prepare;
 
     q.open;
@@ -1066,28 +1129,36 @@ begin
   result := q;
 end;
 
-function TFDMIMportarOrdenes.AbrirOrdenCargaAurora(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TSQLQuery;
+function TFDMIMportarOrdenes.AbrirOrdenCargaAurora(empresa, centro , fecha : string; orden_occ : integer) : TSimpleDataSet;
 var
-  q : TSQLQuery;
+  w : TSimpleDataSet;
 begin
-  q := nil;
+  //q := nil;
   try
-    q := TSQLQuery.Create(nil);
-    q.SQLConnection := self.FConexionAurora;
+    w := FConexionAurora.NewSimpleDataset(Self);
+//    w.ReadOnly := false;
 
-    q.sql.add('select * from frf_orden_carga_c');
-    q.sql.add('where empresa_occ = :p0');
-    q.sql.add('and centro_salida_occ = :p1');
-    q.sql.add('and fecha_occ = :p2');
-    q.sql.add('and orden_occ = :p3');
+    w.Dataset.CommandText := 'select * from frf_orden_carga_c ' +
+                             'where empresa_occ = :p0 ' +
+                             'and centro_salida_occ = :p1 ' +
+                             'and fecha_occ = :fecha ' +
+                             'and id = :p3 ' ;
 
+    w.dataset.ParamByName('p0').AsString := empresa;
+    w.dataset.ParamByName('p1').AsString := centro;
+    w.dataset.ParamByName('fecha').asString:= copy(fecha, 7,4) + '-' + copy(fecha, 4, 2) + '-' + copy(fecha, 1,2);
+    w.dataset.ParamByName('p3').AsInteger := orden_occ;
+{
     q.params[0].asstring := empresa;
+    //q.Params.ParamByName('p0').Value := empresa;
     q.params[1].asstring := centro;
+    //q.Params.ParamByName('p1').Value := centro;
     q.params[2].asdatetime := fecha;
+    //q.Params.ParamByName('p2').Value := fecha;
     q.params[3].asinteger := orden_occ;
-
-
-    q.open;
+    //q.Params.ParamByName('p3').Value := orden_occ;
+}
+    w.open;
 
   Except
     On E : Exception do
@@ -1096,31 +1167,30 @@ begin
     end;
   end;
 
-  result := q;
+  result := w;
 end;
 
-function TFDMIMportarOrdenes.AbrirOrdenCargaDetAurora(empresa, centro : string; fecha : TDateTime; orden_occ : integer) : TSQLQuery;
+function TFDMIMportarOrdenes.AbrirOrdenCargaDetAurora(empresa, centro, fecha : string; orden_occ : integer) : TSimpleDataSet;
 var
-  q : TSQLQuery;
+  w : TSimpleDataSet;
 begin
-  q := nil;
+  //q := nil;
   try
-    q := TSQLQuery.Create(nil);
-    q.SQLConnection := self.FConexionAurora;
+    w := FConexionAurora.NewSimpleDataset(Self);
+//    w.ReadOnly := false;
 
-    q.sql.add('select * from frf_orden_carga_l');
-    q.sql.add('where empresa_ocl = :p0');
-    q.sql.add('and centro_salida_ocl = :p1');
-    q.sql.add('and fecha_ocl = :p2');
-    q.sql.add('and orden_ocl = :p3');
+    w.Dataset.CommandText := 'select * from frf_orden_carga_l ' +
+                             'where empresa_ocl = :p0 ' +
+                             'and centro_salida_ocl = :p1 ' +
+                             'and fecha_ocl = :fecha ' +
+                             'and frf_orden_carga_c_id = :p3 ' ;
 
-    q.params[0].asstring := empresa;
-    q.params[1].asstring := centro;
-    q.params[2].asdatetime := fecha;
-    q.params[3].asinteger := orden_occ;
+    w.dataset.ParamByName('p0').AsString := empresa;
+    w.dataset.ParamByName('p1').AsString := centro;
+    w.dataset.ParamByName('fecha').asString:= copy(fecha, 7,4) + '-' + copy(fecha, 4, 2) + '-' + copy(fecha, 1,2);
+    w.dataset.ParamByName('p3').AsInteger := orden_occ;
 
-
-    q.open;
+    w.open;
 
   Except
     On E : Exception do
@@ -1129,7 +1199,7 @@ begin
     end;
   end;
 
-  result := q;
+  result := w;
 end;
 
 function TFDMIMportarOrdenes.GetComputerNameFromWindows: string;

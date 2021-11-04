@@ -12,10 +12,10 @@ unit OrdenCarga_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 13/10/2021 15:59:14 from Type Library described below.
+// File generated on 02/11/2021 12:32:04 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Delphi2007\OrdenCarga Desarrollo\OrdenCargaBonnysa\OrdenCarga.tlb (1)
+// Type Lib: C:\Gestion Comercial Desarrollo Git\OrdenCarga Desarrollo\OrdenCargaBonnysa-Desarrollo\OrdenCarga.tlb (1)
 // LIBID: {C64A030D-1362-4F92-9402-DCCB92D8839A}
 // LCID: 0
 // Helpfile: 

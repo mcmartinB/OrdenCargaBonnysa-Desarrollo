@@ -25,6 +25,7 @@ object FImportarOrdenes: TFImportarOrdenes
     Height = 225
     Align = alClient
     TabOrder = 0
+    ExplicitTop = 117
     object cxGrid1DBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False
@@ -63,6 +64,10 @@ object FImportarOrdenes: TFImportarOrdenes
         PropertiesClassName = 'TcxCheckBoxProperties'
         Properties.ValueChecked = 1
         Properties.ValueUnchecked = 0
+      end
+      object cxGrid1DBTableView1Column12: TcxGridDBColumn
+        Caption = 'ID'
+        DataBinding.FieldName = 'id_orden'
       end
       object cxGrid1DBTableView1Column2: TcxGridDBColumn
         DataBinding.FieldName = 'Empresa'
@@ -200,8 +205,8 @@ object FImportarOrdenes: TFImportarOrdenes
       Width = 121
     end
     object BuscarBtn: TButton
-      Left = 193
-      Top = 76
+      Left = 198
+      Top = 78
       Width = 75
       Height = 25
       Caption = 'Buscar'
