@@ -130,7 +130,6 @@ begin
 
   qMuestraCargas := TSQLQuery.Create(self);
   qMuestraCargas.SQLConnection := AuroraConn;
-
   self.MuestraCargaDs.Dataset := QMuestraCargas;
   self.cxGrid1DBTableView1.DataController.DataSource := self.MuestraCargaDs;
 
@@ -143,7 +142,6 @@ var
   qMysql : TSQLQuery;
   qIfx : TQuery;
   db_mysql, instancia_ifx : string;
-  estado : integer;
 begin
   result := false;
   
@@ -192,7 +190,6 @@ procedure TFImportarOrdenes.cxGrid1DBTableView1CellDblClick(Sender: TcxCustomGri
   ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 var
   RecIdx : integer;
-  valor : variant;
 begin
   try
     RecIdx := self.cxGrid1DBTableView1.DataController.FocusedRecordIndex;
@@ -477,6 +474,7 @@ begin
 
     try
        q1 := TSQLQuery.Create(nil);
+      // q1.UpdateStatus := usInserted;
       q1.SQLConnection := self.AuroraConn;
       q1.sql.add('select provider from '+bd1+'.shipment s');
       q1.sql.add('left join '+bd1+'.shipment_order so on so.shipmentId = s.id');

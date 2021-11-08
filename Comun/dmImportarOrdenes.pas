@@ -24,6 +24,7 @@ type
 
 
 type
+
   TFDMImportarOrdenes = class(TDataModule)
   private
     FConexionAurora: TConexionAWSAurora;
@@ -43,6 +44,8 @@ type
 
     FCentroDTO: TCentroDTO;
 
+    rImpuestoActual: TImpuesto;
+    rImpuestoLinea : real;
   protected
     procedure CargarCabecera (const orden_occ: integer);
     procedure CargarLineas(orden_occ, contador: Integer);
@@ -66,7 +69,7 @@ type
 
 
 
-    function CambiarContadorAurora(registro : TDataset; nuevo_contador : integer) : integer;
+    function CambiarContadorAurora(registro : TSimpleDataset; nuevo_contador : integer) : integer;
     function CambiarEstadoAurora(registro : TDataset;  status_occ : integer) : integer;
     function BorrarOccAurora(registro : TDataset) : integer;
 
@@ -114,10 +117,25 @@ begin
     if not (FQSelOrdenCab.State in dseditModes) then FQSelOrdenCab.Edit;
 
     FQSelOrdenCab.FieldByName('orden_occ').AsInteger := orden_occ;
+    //albarán será el numero de orden hasta que se genere el albarán
     FQSelOrdenCab.FieldByName('n_albaran_occ').AsInteger := orden_occ;
     FQSelOrdenCab.FieldByName('higiene_occ').AsInteger := 1;
+    //estado a 0 = órden creada
     FQSelOrdenCab.FieldByName('status_occ').AsInteger := 0;
+
+    //coger el tipo de iva
+    rImpuestoActual:= DOrdenCarga.ImpuestosCliente( FQSelOrdenCab.FieldByName('empresa_occ').AsString,
+                                                   FQSelOrdenCab.FieldByName('centro_salida_occ').AsString,
+                                                   FQSelOrdenCab.FieldByName('cliente_sal_occ').AsString,
+                                                   FQSelOrdenCab.FieldByName('dir_sum_occ').AsString,
+                                                   StrToDate( FQSelOrdenCab.FieldByName('fecha_occ').AsString));
+
+
     FQSelOrdenCab.Post;
+    //aplica los cambios
+    FQSelOrdenCab.ApplyUpdates(-1);
+
+    //asigna los campos de la select a la insert para actualizar los registros
     AsingnarCamposAParametros(FQSelOrdenCab, FQInsOrdenCab);
     ExecSQL;
   end;
@@ -125,6 +143,8 @@ end;
 
 procedure TFDMImportarOrdenes.CargarLineas(orden_occ, contador: Integer);
 begin
+  rImpuestoLinea := 0;
+
   with FQInsOrdenLin do
   begin
     if FQSelOrdenLin.Active then
@@ -134,10 +154,38 @@ begin
     FQSelOrdenLin.Open;
     while not FQSelOrdenLin.eof do
     begin
-     if not (FQSelOrdenLin.State in dseditModes) then FQSelOrdenLin.Edit;
+     if not (FQSelOrdenLin.State in dsEditModes) then FQSelOrdenLin.Edit;
       FQSelOrdenLin.FieldByName('orden_ocl').AsInteger := contador;
       FQSelOrdenLin.FieldByName('n_albaran_ocl').AsInteger := contador;
       FQSelOrdenLin.FieldByName('centro_origen_ocl').AsInteger := FQSelOrdenLin.FieldByName('centro_salida_ocl').AsInteger;
+
+      //cargar impuestos en AURORA         empresa, envase, producto
+      case DOrdenCarga.TipoIvaEnvase( FQSelOrdenLin.FieldByName('empresa_ocl').AsString,
+                                      FQSelOrdenLin.FieldByName('envase_ocl').AsString,
+                                      FQSelOrdenLin.FieldByName('producto_ocl').AsString) of
+        0: rImpuestoLinea := rImpuestoActual.rSuper;
+        1: rImpuestoLinea:= rImpuestoActual.rReducido;
+        else rImpuestoLinea := rImpuestoActual.rGeneral;
+      end;
+
+      FQSelOrdenLin.FieldByName('porc_iva_ocl').AsFloat := rImpuestoLinea;
+      FQSelOrdenLin.FieldByName('tipo_iva_ocl').AsString := UpperCase(rImpuestoActual.sCodigo);
+      //unidad precio en mayus
+      FQSelOrdenLin.FieldByName('unidad_precio_ocl').AsString := UpperCase(FQSelOrdenLin.FieldByName('unidad_precio_ocl').AsString);
+
+      //calcular el importe neto en funcion de la unidad de precio
+      if FQSelOrdenLin.FieldByName('unidad_precio_ocl').AsString = 'KGS' then
+        FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat := FQSelOrdenLin.FieldByName('kilos_ocl').AsFloat * FQSelOrdenLin.FieldByName('precio_ocl').AsFloat
+      else if FQSelOrdenLin.FieldByName('unidad_precio_ocl').AsString = 'CAJ' then
+        FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat := FQSelOrdenLin.FieldByName('cajas_ocl').AsFloat * FQSelOrdenLin.FieldByName('precio_ocl').AsFloat
+      else if FQSelOrdenLin.FieldByName('unidad_precio_ocl').AsString = 'UND' then
+        FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat := FQSelOrdenLin.FieldByName('unidades_ocl').AsFloat * FQSelOrdenLin.FieldByName('precio_ocl').AsFloat;
+
+      //calcular el iva_ocl
+      FQSelOrdenLin.FieldByName('iva_ocl').AsFloat := FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat * (FQSelOrdenLin.FieldByName('porc_iva_ocl').AsFloat/100);
+      //calcular el importe total
+      FQSelOrdenLin.FieldByName('importe_total_ocl').AsFloat := FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat + FQSelOrdenLin.FieldByName('iva_ocl').AsFloat;
+
       FQSelOrdenLin.Post;
 
       AsingnarCamposAParametros(FQSelOrdenLin, FQInsOrdenLin);
@@ -677,20 +725,22 @@ begin
 end;
 
 
-function TFDMImportarOrdenes.CambiarContadorAurora(registro : TDataset; nuevo_contador : integer) : integer;
+function TFDMImportarOrdenes.CambiarContadorAurora(registro : TSimpleDataset; nuevo_contador : integer) : integer;
 var
-  lin : TDataset;
+  lin : TSimpleDataset;
 begin
   try
     lin := nil;
     try
       //cabecera de la orden de Aurora
+      registro.ReadOnly := false;
       registro.edit;
       registro.fieldbyname('orden_occ').asinteger := nuevo_contador;
       registro.fieldbyname('updated_at').asdatetime := now;
       registro.fieldbyname('status_occ').asInteger := 0;
       registro.post;
 
+      registro.ApplyUpdates(-1);
       //líneas de la orden de informix
       lin := self.AbrirOrdenCargaDetAurora(registro.fieldbyname('empresa_occ').asstring,
         registro.fieldbyname('centro_salida_occ').asstring,
@@ -698,15 +748,28 @@ begin
         registro.fieldbyname('id').asinteger);
 
       lin.first;
-
+      FQSelOrdenLin.First;
+      //cada línea
       while not lin.eof do
       begin
+          lin.ReadOnly := false;
           lin.edit;
           lin.FieldByName('orden_ocl').asinteger := nuevo_contador;
+          lin.FieldByName('n_albaran_ocl').asinteger := nuevo_contador;
           lin.fieldbyname('updated_at').asdatetime := now;
+          //Cambiar impuestos y unidad_precio_ocl a mayus
+          lin.FieldByName('unidad_precio_ocl').AsString := UpperCase(lin.FieldByName('unidad_precio_ocl').AsString);
+          lin.FieldByName('tipo_iva_ocl').asString := rImpuestoActual.sCodigo;
+          lin.FieldByName('porc_iva_ocl').asFloat := rImpuestoLinea;
+          lin.FieldByName('importe_neto_ocl').asFloat := FQSelOrdenLin.FieldByName('importe_neto_ocl').AsFloat;
+          lin.FieldByName('importe_total_ocl').asFloat := FQSelOrdenLin.FieldByName('importe_total_ocl').AsFloat;
+          lin.FieldByName('iva_ocl').asFloat := FQSelOrdenLin.FieldByName('iva_ocl').AsFloat;
           lin.post;
+          lin.ApplyUpdates(-1);
           lin.next;
+          FQSelOrdenLin.Next;
       end;
+      //IMPORTANTE, SINO NO SE CONFIRMAN LOS CAMBIOS
 
       lin.close;
 
@@ -722,12 +785,13 @@ begin
 end;
 
 
-//funcion que descarga una orden de Aurora AWS
+//funcion que descarga una orden de Aurora AWS con destino informix
 function TFDMImportarOrdenes.Descargar(orden_occ : integer) : boolean;
 var
   correcto : boolean;
   nuevo_contador : integer;
-  ifxdst, auroradst : TDataset;
+  ifxdst : TDataset;
+  auroradst : TSimpleDataSet;
   sGrupoEmpresa: String;
 begin
   correcto := false;
@@ -745,13 +809,10 @@ begin
       FQSelOrdenCab.Open;
       Log('Conectado a servidor web.');
 
-      //RegistrosTotales := RegistrosAProcesar;
+      //Recorre todas las órdenes que se han seleccionado para descargar
       Log(Format('Procesando %d orden de carga', [ orden_occ ]));
       while not FQSelOrdenCab.eof do
       begin
-//        orden_occ := FQSelOrdenCab.FieldByName('orden_occ').AsInteger;
-//        if not ExisteOrden(orden_occ) then
-//        begin
           FConexionDestino.StartTransaction;
           try
             if FCentroDTO.EmpresaCodigo = '050' then
@@ -759,37 +820,26 @@ begin
             else
               sGrupoEmpresa := 'BAG';
 
+            //genera un contador para los siguientes registros
             nuevo_contador := self.GenerarContadorInformix(sGrupoEmpresa);
 
+            //Carga la cabecera de la órden de carga
             CargarCabecera(nuevo_contador);
+            //Carga las líneas de la órden de carga
             CargarLineas(orden_occ, nuevo_contador);
-//            CargarPackingList(orden_occ);
 
-  //          if FQSelOrdenCab.FieldByName('orden_occ').asInteger in [20, 30] then
-  //            raise Exception.Create('Error provocado a posta');
-
-                     //recoge los datos de la orden en informix
-//            ifxdst := self.AbrirOrdenCargaIfx(FQSelOrdenCab.FieldByName('empresa_occ').asstring,
-//                   FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
-//                    FQSelOrdenCab.FieldByName('fecha_occ').asdatetime,
-//                    orden_occ);
-//
-//             //Asigna el nuevo contador a la orden
-//             self.CambiarContadorInformix(ifxdst, nuevo_contador);
-
-//             ifxdst.close;
-//             FreeAndNil(ifxdst);
-
-
+            //fin de transacción
             FConexionDestino.Commit;
             Inc(RegistrosProcesados);
 
             try
+              //recoge la orden de carga en aurora
               auroradst := self.AbrirOrdenCargaAurora(FQSelOrdenCab.FieldByName('empresa_occ').asstring,
                     FQSelOrdenCab.FieldByName('centro_salida_occ').asstring,
                     FQSelOrdenCab.FieldByName('fecha_occ').asstring,
                     orden_occ);
 
+              //actualiza en aurora los campos de cabecera y líneas
               self.CambiarContadorAurora(auroradst, nuevo_Contador);
 
               auroradst.close;
@@ -815,14 +865,7 @@ begin
               Log(Format('Error al importar orden %d (%s)', [ orden_occ, E.Message ]));
             end;
           end;
-{
-        end
-        else
-        begin
-          Log(Format('Warning: la orden %d ya existe', [ orden_occ ]));
-          Inc(RegistrosErrores);
-        end;
-}
+      //siguiente órden a importar
         FQSelOrdenCab.Next;
         ProgressUpdate(RegistrosProcesados, RegistrosTotales);
       end;
@@ -891,35 +934,6 @@ begin
   end;
 end;
 
-
-//procedure TFDMImportarOrdenes.AsingnarCamposAParametros(Source: TDataset; Destination: TQuery);
-//var
-//  Ind:longint;
-//  SField: TField;
-//  DField: TParam;
-//begin
-//  for Ind:=0 to Destination.ParamCount - 1 do
-//   begin
-//     SField := Source.Fields[ Ind ];
-//     DField := Destination.Params.FindParam( SField.FieldName );
-//
-//     if (DField <> nil) {and (DField.FieldKind = fkData) and
-//        not DField.ReadOnly} then
-//        if SField.IsNull then
-//        begin
-//          Destination.ParamByName(SField.FieldName).Clear
-//        end
-//        else if (SField.DataType = ftString) {or
-//           (SField.DataType <> DField.DataType)} then
-//        begin
-//           Destination.ParamByName(SField.FieldName).asString := Trim(SField.AsString);
-//        end
-//        else
-//        begin
-//           Destination.ParamByName(SField.FieldName).Value := Trim(SField.Value);
-//        end;
-//   end;
-//end;
                                                       //Source = Aurora -> select    Destination = Informix -> insert
 procedure TFDMImportarOrdenes.AsingnarCamposAParametros(Source: TDataset;            Destination: TQuery);
 var
@@ -997,6 +1011,7 @@ begin
   result := estado;
 end;
 
+//función que consulta el contador de órdenes de carga y le suma 1
 function TFDMIMportarOrdenes.GenerarContadorInformix(empresa_occ : string) : integer;
 var
   q1: TQuery;
@@ -1133,10 +1148,10 @@ function TFDMIMportarOrdenes.AbrirOrdenCargaAurora(empresa, centro , fecha : str
 var
   w : TSimpleDataSet;
 begin
-  //q := nil;
+  w := nil;
   try
     w := FConexionAurora.NewSimpleDataset(Self);
-//    w.ReadOnly := false;
+    w.ReadOnly := false;
 
     w.Dataset.CommandText := 'select * from frf_orden_carga_c ' +
                              'where empresa_occ = :p0 ' +
@@ -1148,16 +1163,6 @@ begin
     w.dataset.ParamByName('p1').AsString := centro;
     w.dataset.ParamByName('fecha').asString:= copy(fecha, 7,4) + '-' + copy(fecha, 4, 2) + '-' + copy(fecha, 1,2);
     w.dataset.ParamByName('p3').AsInteger := orden_occ;
-{
-    q.params[0].asstring := empresa;
-    //q.Params.ParamByName('p0').Value := empresa;
-    q.params[1].asstring := centro;
-    //q.Params.ParamByName('p1').Value := centro;
-    q.params[2].asdatetime := fecha;
-    //q.Params.ParamByName('p2').Value := fecha;
-    q.params[3].asinteger := orden_occ;
-    //q.Params.ParamByName('p3').Value := orden_occ;
-}
     w.open;
 
   Except

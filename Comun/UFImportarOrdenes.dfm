@@ -106,6 +106,7 @@ object FImportarOrdenes: TFImportarOrdenes
       object cxGrid1DBTableView1Column11: TcxGridDBColumn
         Caption = 'Transporte'
         DataBinding.FieldName = 'transporte'
+        Width = 91
       end
     end
     object cxGrid1Level1: TcxGridLevel
