@@ -43,6 +43,7 @@ type
     QBorrarPacking: TQuery;
     QDesfinalizarOrden: TQuery;
     QRecargo_equivalencia: TQuery;
+    QCambiarComercial: TQuery;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private

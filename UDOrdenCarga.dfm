@@ -465,4 +465,9 @@ object DOrdenCarga: TDOrdenCarga
         ParamType = ptUnknown
       end>
   end
+  object QCambiarComercial: TQuery
+    DatabaseName = 'Database'
+    Left = 80
+    Top = 144
+  end
 end

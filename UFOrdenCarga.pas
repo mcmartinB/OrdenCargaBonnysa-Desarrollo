@@ -447,6 +447,7 @@ type
     procedure PDetalleEnter(Sender: TObject);
     procedure DSMaestroStateChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure producto_oclExit(Sender: TObject);
     
 
   private
@@ -2151,6 +2152,45 @@ begin
 
   if envase_ocl.Text <> '' then
     envase_oclChange( envase_ocl );
+end;
+
+procedure TFOrdenCarga.producto_oclExit(Sender: TObject);
+begin
+  with DOrdenCarga.QCambiarComercial do
+  begin
+    if Active then
+      begin
+        Cancel;
+        Close;
+      end;
+    SQL.Clear;
+    SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
+    SQL.Add(' where cod_empresa_cc = :empresa ');
+    SQL.Add(' and cod_cliente_cc = :cliente ');
+    SQL.Add(' and cod_producto_cc = :producto ');
+    ParamByName('empresa').asString := empresa_occ.Text;
+    ParamByName('cliente').asString := cliente_sal_occ.Text;
+    ParamByName('producto').asString := producto_ocl.Text;
+    Open;
+    if isEmpty then
+    begin
+      if Active then
+      begin
+        Cancel;
+        Close;
+      end;
+      SQL.Clear;
+      SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
+      SQL.Add(' where cod_empresa_cc = :empresa ');
+      SQL.Add(' and cod_cliente_cc = :cliente ');
+      SQL.Add(' and cod_producto_cc is null ');
+      ParamByName('empresa').asString := empresa_occ.Text;
+      ParamByName('cliente').asString := cliente_sal_occ.Text;
+      Open;
+    end;
+    comercial_ocl.Text := FieldByName('cod_comercial_cc').asString;
+    Close;
+  end;
 end;
 
 function desUnidad( const ATipoUnidad: String ): String;
