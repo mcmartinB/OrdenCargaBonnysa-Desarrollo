@@ -12,7 +12,7 @@ unit OrdenCarga_TLB;
 // ************************************************************************ //
 
 // $Rev: 8291 $
-// File generated on 17/11/2021 11:48:52 from Type Library described below.
+// File generated on 14/01/2022 10:09:03 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\Gestion Comercial Desarrollo Git\OrdenCarga Desarrollo\OrdenCargaBonnysa-Desarrollo\OrdenCarga.tlb (1)

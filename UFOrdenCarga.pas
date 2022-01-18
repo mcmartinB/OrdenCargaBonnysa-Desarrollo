@@ -1474,6 +1474,8 @@ begin
 end;
 
 procedure TFOrdenCarga.PDetalleEnter(Sender: TObject);
+var
+  AFecha : TDateTime;
 begin
   if comercial_ocl.Text = '' then
   begin
@@ -1481,14 +1483,18 @@ begin
     try
       SQL.Clear;
       SQL.Add(' select * from frf_clientes_comercial    ');
-      SQL.Add('   where cod_empresa_cc = :empresa ');
-      SQL.Add('     and cod_cliente_cc = :cliente   ');
-
-      ParamByName('empresa').AsString := QOrdenCargaCempresa_occ.AsString;
-      ParamByName('cliente').AsString := QOrdenCargaCCliente_sal_occ.AsString;
+      //SQL.Add('   where cod_empresa_cc = :empresa ');
+      SQL.Add('     where cod_cliente_cc = :cliente   ');
+      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, today) '); //' + QuotedStr(fecha_occ.Text) + ') ');
+      //ParamByName('empresa').AsString := QOrdenCargaCempresa_occ.AsString;
+      ParamByName('cliente').AsString := cliente_sal_occ.Text;
+      ParamByName('fecha').AsString := fecha_occ.Text;
       Open;
 
-      comercial_ocl.Text := FieldByName('cod_comercial_cc').AsString;
+      if isEmpty then
+        comercial_ocl.Text := '000'
+      else
+        comercial_ocl.Text := FieldByName('cod_comercial_cc').AsString;
 
      finally
       close;
@@ -2155,20 +2161,25 @@ begin
 end;
 
 procedure TFOrdenCarga.producto_oclExit(Sender: TObject);
+var
+  AFecha : TDateTime;
 begin
   with DOrdenCarga.QCambiarComercial do
   begin
+    comercial_ocl.Text := '';
+    AFecha := StrToDate(fecha_occ.Text);
+
     if Active then
-      begin
-        Cancel;
-        Close;
-      end;
+    begin
+      Cancel;
+      Close;
+    end;
     SQL.Clear;
     SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
-    SQL.Add(' where cod_empresa_cc = :empresa ');
-    SQL.Add(' and cod_cliente_cc = :cliente ');
+    SQL.Add(' where cod_cliente_cc = :cliente ');
     SQL.Add(' and cod_producto_cc = :producto ');
-    ParamByName('empresa').asString := empresa_occ.Text;
+    SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+    ParamByName('fecha').asDateTime := AFecha;
     ParamByName('cliente').asString := cliente_sal_occ.Text;
     ParamByName('producto').asString := producto_ocl.Text;
     Open;
@@ -2181,15 +2192,34 @@ begin
       end;
       SQL.Clear;
       SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
-      SQL.Add(' where cod_empresa_cc = :empresa ');
-      SQL.Add(' and cod_cliente_cc = :cliente ');
-      SQL.Add(' and cod_producto_cc is null ');
-      ParamByName('empresa').asString := empresa_occ.Text;
-      ParamByName('cliente').asString := cliente_sal_occ.Text;
+      SQL.Add(' where cod_producto_cc = :producto');
+      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+      ParamByName('fecha').asDateTime := AFecha;
+      ParamByName('producto').asString := producto_ocl.Text;
       Open;
     end;
-    comercial_ocl.Text := FieldByName('cod_comercial_cc').asString;
-    Close;
+      if isEmpty then
+      begin
+        if Active then
+        begin
+          Cancel;
+          Close;
+        end;
+        SQL.Clear;
+        SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
+        SQL.Add(' where cod_cliente_cc = :cliente');
+        SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+        ParamByName('fecha').asDateTime := AFecha;
+        ParamByName('cliente').asString := cliente_sal_occ.Text;
+        Open;
+      end;
+
+      if isEmpty then
+         comercial_ocl.Text := '000'
+      else
+        comercial_ocl.Text := FieldByName('cod_comercial_cc').AsString;
+
+      Close;
   end;
 end;
 
