@@ -2104,6 +2104,7 @@ begin
       if ( empresa_occ.Text = '050' ) then
       begin
         nota_occ.Lines.Add('Mantener temperatura entre 8 y 10 grados.');
+        nota_occ.Lines.Add('Temperatura de la carga: conforme.');
         if ( cliente_sal_occ.Text = 'MER' ) then
         begin
           //nota_occ.Lines.Add('TEMPERATURA OPTIMA DE +8 A +10 GRADOS.');
