@@ -4,7 +4,7 @@ object FOrdenCarga: TFOrdenCarga
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = '  ORDENES DE CARGA SAT BONNYSA'
-  ClientHeight = 678
+  ClientHeight = 680
   ClientWidth = 812
   Color = clBtnFace
   Constraints.MaxHeight = 718
@@ -62,7 +62,7 @@ object FOrdenCarga: TFOrdenCarga
       Height = 25
     end
     object Bevel4: TBevel
-      Left = 37
+      Left = 38
       Top = 126
       Width = 724
       Height = 48
@@ -1001,6 +1001,7 @@ object FOrdenCarga: TFOrdenCarga
       ColorEdit = clMoneyGreen
       MaxLength = 5
       TabOrder = 3
+      OnExit = hora_occExit
       DataField = 'hora_occ'
       DataSource = DSMaestro
     end
@@ -1484,7 +1485,7 @@ object FOrdenCarga: TFOrdenCarga
     Left = 0
     Top = 429
     Width = 812
-    Height = 249
+    Height = 251
     ActivePage = tsLineas
     Align = alClient
     TabOrder = 2
@@ -1495,7 +1496,7 @@ object FOrdenCarga: TFOrdenCarga
         Left = 0
         Top = 150
         Width = 804
-        Height = 71
+        Height = 73
         Align = alClient
         BiDiMode = bdLeftToRight
         Color = 14673661
@@ -1658,7 +1659,7 @@ object FOrdenCarga: TFOrdenCarga
         OnEnter = PDetalleEnter
         object Label2: TLabel
           Left = 14
-          Top = 26
+          Top = 4
           Width = 75
           Height = 19
           AutoSize = False
@@ -1669,7 +1670,7 @@ object FOrdenCarga: TFOrdenCarga
         end
         object BGBProducto_ocl: TBGridButton
           Left = 124
-          Top = 24
+          Top = 2
           Width = 13
           Height = 22
           Hint = 'Pulse F2 para ver una lista de valores validos. '
@@ -1716,80 +1717,20 @@ object FOrdenCarga: TFOrdenCarga
           GridWidth = 240
           GridHeigth = 200
         end
-        object Label7: TLabel
-          Left = 359
-          Top = 6
-          Width = 70
-          Height = 19
-          AutoSize = False
-          Caption = ' Centro Origen'
-          Color = cl3DLight
-          ParentColor = False
-          Layout = tlCenter
-        end
-        object BGBCentro_origen_ocl: TBGridButton
-          Left = 454
-          Top = 4
-          Width = 13
-          Height = 22
-          Hint = 'Pulse F2 para ver una lista de valores validos. '
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000000000000000000000000000000000000FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00000000BFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FF00000000000000000000000000FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00000000000000000000000000000000000000
-            00BFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF0000000000000000000000000000000000000000000000
-            000000000000FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = BGBCentro_origen_oclClick
-          Control = centro_origen_ocl
-          GridAlignment = taDownRight
-          GridWidth = 250
-          GridHeigth = 200
-        end
         object Label6: TLabel
-          Left = 286
-          Top = 26
+          Left = 14
+          Top = 25
           Width = 70
           Height = 19
           AutoSize = False
-          Caption = 'Art'#237'culo'
+          Caption = ' Art'#237'culo'
           Color = cl3DLight
           ParentColor = False
           Layout = tlCenter
         end
         object Label15: TLabel
           Left = 573
-          Top = 26
+          Top = 25
           Width = 55
           Height = 19
           AutoSize = False
@@ -1800,7 +1741,7 @@ object FOrdenCarga: TFOrdenCarga
         end
         object BGBMarca_ocl: TBGridButton
           Left = 651
-          Top = 24
+          Top = 23
           Width = 13
           Height = 22
           Hint = 'Pulse F2 para ver una lista de valores validos. '
@@ -2115,77 +2056,6 @@ object FOrdenCarga: TFOrdenCarga
           ParentColor = False
           Layout = tlCenter
         end
-        object lblRefTransito: TLabel
-          Left = 14
-          Top = 6
-          Width = 75
-          Height = 19
-          AutoSize = False
-          Caption = ' Ref. Tr'#225'nsito'
-          Color = cl3DLight
-          ParentColor = False
-          Layout = tlCenter
-        end
-        object Label8: TLabel
-          Left = 158
-          Top = 6
-          Width = 70
-          Height = 19
-          AutoSize = False
-          Caption = ' Fecha'
-          Color = cl3DLight
-          ParentColor = False
-          Layout = tlCenter
-        end
-        object BCBFecha_transito_ocl: TBCalendarButton
-          Left = 312
-          Top = 5
-          Width = 13
-          Height = 21
-          Hint = 'Pulse F2 para deplegar un calendario. '
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000000000000000000000000000000000000FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00000000BFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FF00000000000000000000000000FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00000000000000000000000000000000000000
-            00BFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF0000000000000000000000000000000000000000000000
-            000000000000FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00FFBFFF00FF00FF00
-            FFBFFF00FF00FF00FFBFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-            FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = BCBFecha_transito_oclClick
-          Control = fecha_transito_ocl
-          CalendarAlignment = taDownRight
-          CalendarWidth = 197
-          CalendarHeigth = 153
-        end
         object lblPalets: TLabel
           Left = 286
           Top = 68
@@ -2350,74 +2220,58 @@ object FOrdenCarga: TFOrdenCarga
           ParentColor = False
           Layout = tlCenter
         end
+        object Label7: TLabel
+          Left = 319
+          Top = 3
+          Width = 439
+          Height = 19
+          AutoSize = False
+          Caption = 
+            'Grabar Peso Real en Transito ( Independientemente del Peso del A' +
+            'rticulo (Fijo o Variable) )'
+          Color = cl3DLight
+          ParentColor = False
+          Layout = tlCenter
+        end
         object STProducto_ocl: TStaticText
           Left = 139
-          Top = 27
+          Top = 5
           Width = 144
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 8
+          TabOrder = 1
         end
         object producto_ocl: TBDEdit
           Tag = 1
           Left = 92
-          Top = 25
+          Top = 3
           Width = 30
           Height = 21
           ColorEdit = clMoneyGreen
           Required = True
           RequiredMsg = 'El c'#243'digo del producto es de obligada inserci'#243'n.'
           MaxLength = 3
-          TabOrder = 4
+          TabOrder = 0
           OnChange = producto_oclChange
           OnExit = producto_oclExit
           DataField = 'producto_ocl'
           DataSource = DSDetalle
           PrimaryKey = True
         end
-        object centro_origen_ocl: TBDEdit
-          Tag = 1
-          Left = 435
-          Top = 5
-          Width = 20
-          Height = 21
-          ColorEdit = clMoneyGreen
-          ColorNormal = clSkyBlue
-          Zeros = True
-          Required = True
-          RequiredMsg = 
-            'El c'#243'digo del centro de origen del producto es de obligada inser' +
-            'ci'#243'n.'
-          MaxLength = 1
-          TabOrder = 2
-          OnChange = centro_origen_oclChange
-          DataField = 'centro_origen_ocl'
-          DataSource = DSDetalle
-          PrimaryKey = True
-        end
-        object STCentro_origen_ocl: TStaticText
-          Left = 469
-          Top = 7
-          Width = 150
-          Height = 17
-          AutoSize = False
-          BorderStyle = sbsSunken
-          TabOrder = 3
-        end
         object STEnvase_ocl: TStaticText
-          Left = 434
-          Top = 27
-          Width = 133
+          Left = 189
+          Top = 26
+          Width = 377
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 9
+          TabOrder = 4
         end
         object marca_ocl: TBDEdit
           Tag = 1
           Left = 625
-          Top = 25
+          Top = 24
           Width = 25
           Height = 21
           ColorEdit = clMoneyGreen
@@ -2425,7 +2279,7 @@ object FOrdenCarga: TFOrdenCarga
           Required = True
           RequiredMsg = 'El c'#243'digo de la marca del producto es de obligada inserci'#243'n.'
           MaxLength = 2
-          TabOrder = 7
+          TabOrder = 5
           OnChange = marca_oclChange
           DataField = 'marca_ocl'
           DataSource = DSDetalle
@@ -2433,12 +2287,12 @@ object FOrdenCarga: TFOrdenCarga
         end
         object STMarca_ocl: TStaticText
           Left = 664
-          Top = 27
+          Top = 26
           Width = 125
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 10
+          TabOrder = 6
         end
         object categoria_ocl: TBDEdit
           Tag = 1
@@ -2450,7 +2304,7 @@ object FOrdenCarga: TFOrdenCarga
           Required = True
           RequiredMsg = 'El c'#243'digo de la categoria del producto es de obligada inserci'#243'n.'
           MaxLength = 2
-          TabOrder = 12
+          TabOrder = 8
           OnChange = categoria_oclChange
           DataField = 'categoria_ocl'
           DataSource = DSDetalle
@@ -2463,7 +2317,7 @@ object FOrdenCarga: TFOrdenCarga
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 14
+          TabOrder = 10
         end
         object color_ocl: TBDEdit
           Tag = 1
@@ -2475,7 +2329,7 @@ object FOrdenCarga: TFOrdenCarga
           Required = True
           RequiredMsg = 'El c'#243'digo del color del producto es de obligada inserci'#243'n.'
           MaxLength = 1
-          TabOrder = 13
+          TabOrder = 9
           OnChange = color_oclChange
           DataField = 'color_ocl'
           DataSource = DSDetalle
@@ -2488,7 +2342,7 @@ object FOrdenCarga: TFOrdenCarga
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 15
+          TabOrder = 11
         end
         object cajas_ocl: TBDEdit
           Left = 92
@@ -2498,7 +2352,7 @@ object FOrdenCarga: TFOrdenCarga
           ColorEdit = clMoneyGreen
           Required = True
           InputType = itInteger
-          TabOrder = 22
+          TabOrder = 18
           OnChange = cajas_oclChange
           DataField = 'cajas_ocl'
           DataSource = DSDetalle
@@ -2512,7 +2366,7 @@ object FOrdenCarga: TFOrdenCarga
           InputType = itReal
           MaxDecimals = 3
           MaxLength = 9
-          TabOrder = 24
+          TabOrder = 20
           OnChange = precio_oclChange
           DataField = 'precio_ocl'
           DataSource = DSDetalle
@@ -2528,7 +2382,7 @@ object FOrdenCarga: TFOrdenCarga
           RequiredMsg = 'El calibre del producto es de obligada inserci'#243'n.'
           CharCase = ecNormal
           MaxLength = 10
-          TabOrder = 11
+          TabOrder = 7
           DataField = 'calibre_ocl'
           DataSource = DSDetalle
           PrimaryKey = True
@@ -2543,7 +2397,7 @@ object FOrdenCarga: TFOrdenCarga
           InputType = itReal
           MaxDecimals = 2
           MaxLength = 11
-          TabOrder = 23
+          TabOrder = 19
           OnChange = kilos_oclChange
           DataField = 'kilos_ocl'
           DataSource = DSDetalle
@@ -2558,7 +2412,7 @@ object FOrdenCarga: TFOrdenCarga
           ColorNormal = clSilver
           ReadOnly = True
           MaxLength = 3
-          TabOrder = 25
+          TabOrder = 21
           DataField = 'unidad_precio_ocl'
           DataSource = DSDetalle
         end
@@ -2571,7 +2425,7 @@ object FOrdenCarga: TFOrdenCarga
           InputType = itReal
           MaxDecimals = 2
           MaxLength = 11
-          TabOrder = 26
+          TabOrder = 22
           OnChange = importe_neto_oclChange
           DataField = 'importe_neto_ocl'
           DataSource = DSDetalle
@@ -2583,7 +2437,7 @@ object FOrdenCarga: TFOrdenCarga
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 31
+          TabOrder = 27
         end
         object porc_iva_ocl: TBDEdit
           Left = 530
@@ -2597,7 +2451,7 @@ object FOrdenCarga: TFOrdenCarga
           MaxDecimals = 2
           ReadOnly = True
           MaxLength = 6
-          TabOrder = 27
+          TabOrder = 23
           DataField = 'porc_iva_ocl'
           DataSource = DSDetalle
         end
@@ -2613,7 +2467,7 @@ object FOrdenCarga: TFOrdenCarga
           MaxDecimals = 2
           ReadOnly = True
           MaxLength = 11
-          TabOrder = 29
+          TabOrder = 25
           DataField = 'iva_ocl'
           DataSource = DSDetalle
         end
@@ -2627,7 +2481,7 @@ object FOrdenCarga: TFOrdenCarga
           ColorNormal = clSilver
           ReadOnly = True
           MaxLength = 13
-          TabOrder = 30
+          TabOrder = 26
           DataField = 'importe_total_ocl'
           DataSource = DSDetalle
         end
@@ -2641,44 +2495,9 @@ object FOrdenCarga: TFOrdenCarga
           ColorNormal = clSilver
           ReadOnly = True
           MaxLength = 2
-          TabOrder = 28
+          TabOrder = 24
           DataField = 'tipo_iva_ocl'
           DataSource = DSDetalle
-        end
-        object ref_transitos_ocl: TBDEdit
-          Left = 92
-          Top = 5
-          Width = 58
-          Height = 21
-          ColorEdit = clMoneyGreen
-          ColorNormal = clSkyBlue
-          RequiredMsg = 
-            'El c'#243'digo del envase que contiene al producto es de obligada ins' +
-            'ercci'#243'n.'
-          InputType = itInteger
-          MaxLength = 9
-          TabOrder = 0
-          OnChange = ref_transitos_oclChange
-          DataField = 'ref_transitos_ocl'
-          DataSource = DSDetalle
-          PrimaryKey = True
-        end
-        object fecha_transito_ocl: TBDEdit
-          Left = 233
-          Top = 5
-          Width = 77
-          Height = 21
-          ColorEdit = clMoneyGreen
-          ColorNormal = clSkyBlue
-          RequiredMsg = 
-            'El c'#243'digo del envase que contiene al producto es de obligada ins' +
-            'ercci'#243'n.'
-          InputType = itDate
-          MaxLength = 10
-          TabOrder = 1
-          DataField = 'fecha_transito_ocl'
-          DataSource = DSDetalle
-          PrimaryKey = True
         end
         object n_palets_ocl: TBDEdit
           Left = 337
@@ -2689,7 +2508,7 @@ object FOrdenCarga: TFOrdenCarga
           Required = True
           InputType = itInteger
           MaxLength = 3
-          TabOrder = 17
+          TabOrder = 13
           DataField = 'n_palets_ocl'
           DataSource = DSDetalle
         end
@@ -2701,7 +2520,7 @@ object FOrdenCarga: TFOrdenCarga
           ColorEdit = clMoneyGreen
           Required = True
           MaxLength = 2
-          TabOrder = 18
+          TabOrder = 14
           OnChange = tipo_palets_oclChange
           DataField = 'tipo_palets_ocl'
           DataSource = DSDetalle
@@ -2713,7 +2532,7 @@ object FOrdenCarga: TFOrdenCarga
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 20
+          TabOrder = 16
         end
         object unidades_caja_ocl: TBDEdit
           Left = 14
@@ -2723,7 +2542,7 @@ object FOrdenCarga: TFOrdenCarga
           ColorEdit = clMoneyGreen
           Required = True
           InputType = itInteger
-          TabOrder = 21
+          TabOrder = 17
           OnChange = unidades_caja_oclChange
           DataField = 'unidades_caja_ocl'
           DataSource = DSDetalle
@@ -2741,7 +2560,7 @@ object FOrdenCarga: TFOrdenCarga
             'El c'#243'digo del envase que contiene al producto es de obligada ins' +
             'ercci'#243'n.'
           MaxLength = 3
-          TabOrder = 16
+          TabOrder = 12
           OnChange = comercial_oclChange
           DataField = 'comercial_ocl'
           DataSource = DSDetalle
@@ -2754,22 +2573,22 @@ object FOrdenCarga: TFOrdenCarga
           Height = 17
           AutoSize = False
           BorderStyle = sbsSunken
-          TabOrder = 19
+          TabOrder = 15
         end
         object edtentrega_sl: TBDEdit
           Left = 92
-          Top = 129
-          Width = 677
+          Top = 128
+          Width = 679
           Height = 21
           ColorEdit = clMoneyGreen
           MaxLength = 90
-          TabOrder = 32
+          TabOrder = 28
           DataField = 'notas_ocl'
           DataSource = DSDetalle
         end
         object envase_ocl: TcxDBTextEdit
-          Left = 337
-          Top = 25
+          Left = 92
+          Top = 24
           DataBinding.DataField = 'envase_ocl'
           DataBinding.DataSource = DSDetalle
           Properties.CharCase = ecUpperCase
@@ -2784,17 +2603,17 @@ object FOrdenCarga: TFOrdenCarga
           StyleFocused.LookAndFeel.NativeStyle = False
           StyleHot.LookAndFeel.Kind = lfUltraFlat
           StyleHot.LookAndFeel.NativeStyle = False
-          TabOrder = 5
+          TabOrder = 2
           OnExit = envase_oclExit
           Width = 75
         end
         object ssEnvase: TSimpleSearch
-          Left = 412
-          Top = 25
+          Left = 167
+          Top = 24
           Width = 21
           Height = 21
           Hint = 'B'#250'squeda de Art'#237'culo'
-          TabOrder = 6
+          TabOrder = 3
           TabStop = False
           LookAndFeel.NativeStyle = False
           LookAndFeel.SkinName = 'MoneyTwins'
@@ -2822,6 +2641,17 @@ object FOrdenCarga: TFOrdenCarga
           Tecla = 'F2'
           AntesEjecutar = ssEnvaseAntesEjecutar
           Concatenar = False
+        end
+        object es_peso_real_ocl: TDBCheckBox
+          Left = 301
+          Top = 5
+          Width = 17
+          Height = 17
+          DataField = 'es_peso_real_ocl'
+          DataSource = DSDetalle
+          TabOrder = 29
+          ValueChecked = '1'
+          ValueUnchecked = '0'
         end
       end
     end
@@ -3003,7 +2833,9 @@ object FOrdenCarga: TFOrdenCarga
     end
   end
   object QOrdenCargaL: TQuery
+    BeforeInsert = QOrdenCargaLBeforeInsert
     AfterInsert = QOrdenCargaLAfterInsert
+    BeforeEdit = QOrdenCargaLBeforeEdit
     AfterEdit = QOrdenCargaLAfterEdit
     BeforePost = QOrdenCargaLBeforePost
     AfterPost = QOrdenCargaLAfterPost
@@ -3183,12 +3015,20 @@ object FOrdenCarga: TFOrdenCarga
       FieldName = 'notas_ocl'
       Size = 90
     end
+    object QOrdenCargaLes_peso_real_ocl: TIntegerField
+      FieldName = 'es_peso_real_ocl'
+      Origin = 'DATABASE.frf_orden_carga_l.es_peso_real_ocl'
+    end
+    object QOrdenCargaLkilos_reales_ocl: TFloatField
+      FieldName = 'kilos_reales_ocl'
+      Origin = 'DATABASE.frf_orden_carga_l.kilos_reales_ocl'
+    end
   end
   object ImageList: TImageList
     Left = 448
     Top = 33
     Bitmap = {
-      494C0101180028011C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010118002801280110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000007000000001002000000000000070
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4425,10 +4265,23 @@ object FOrdenCarga: TFOrdenCarga
       FieldName = 'notas_ocl'
       Size = 90
     end
+    object qryLineaOrdenes_peso_real_ocl: TIntegerField
+      FieldName = 'es_peso_real_ocl'
+      Origin = 'DATABASE.frf_orden_carga_l.es_peso_real_ocl'
+    end
+    object qryLineaOrdenkilos_reales_ocl: TFloatField
+      FieldName = 'kilos_reales_ocl'
+      Origin = 'DATABASE.frf_orden_carga_l.kilos_reales_ocl'
+    end
   end
   object QPackingList: TQuery
     DatabaseName = 'Database'
     Left = 720
     Top = 232
+  end
+  object qryPesoReal: TQuery
+    DatabaseName = 'Database'
+    Left = 768
+    Top = 128
   end
 end

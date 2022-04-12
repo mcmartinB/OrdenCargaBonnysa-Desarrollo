@@ -10,21 +10,10 @@ uses
   QRPrntr, DBTables, DBCtrls, bDialogs, bSQLUtils, bTimeUtils, StrUtils,
   ToolWin, ImgList, UDOrdenCarga, AFQuickMail, QRPDFFilt, QRExport, cxGraphics,
   cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit,
-  dxSkinsCore, dxSkinBlack, dxSkinBlue, dxSkinBlueprint, dxSkinCaramel,
-  dxSkinCoffee, dxSkinDarkRoom, dxSkinDarkSide, dxSkinDevExpressDarkStyle,
-  dxSkinDevExpressStyle, dxSkinFoggy, dxSkinGlassOceans, dxSkinHighContrast,
-  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky,
-  dxSkinMcSkin, dxSkinMetropolis, dxSkinMetropolisDark, dxSkinMoneyTwins,
-  dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green,
-  dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black,
-  dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinOffice2013DarkGray,
-  dxSkinOffice2013LightGray, dxSkinOffice2013White, dxSkinPumpkin, dxSkinSeven,
-  dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver,
-  dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinTheAsphaltWorld,
-  dxSkinsDefaultPainters, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint,
-  dxSkinXmas2008Blue, cxButtons, SimpleSearch, cxTextEdit, cxDBEdit, UTipos ,
+  cxButtons, SimpleSearch, cxTextEdit, cxDBEdit, UTipos ,
 
-  UFImportarOrdenes, FMTBcd, SqlExpr,ConexionAWSAurora;
+  UFImportarOrdenes, FMTBcd, SqlExpr,ConexionAWSAurora, dxSkinsCore, dxSkinBlue,
+  dxSkinFoggy;
 
 //ESTADOS
 const
@@ -160,8 +149,6 @@ type
     PDetalle: TPanel;
     Label2: TLabel;
     BGBProducto_ocl: TBGridButton;
-    Label7: TLabel;
-    BGBCentro_origen_ocl: TBGridButton;
     Label6: TLabel;
     Label15: TLabel;
     BGBMarca_ocl: TBGridButton;
@@ -179,11 +166,8 @@ type
     Lporc_iva_ocl: TLabel;
     Liva_ocl: TLabel;
     LImporteTotal: TLabel;
-    lblRefTransito: TLabel;
     STProducto_ocl: TStaticText;
     producto_ocl: TBDEdit;
-    centro_origen_ocl: TBDEdit;
-    STCentro_origen_ocl: TStaticText;
     STEnvase_ocl: TStaticText;
     marca_ocl: TBDEdit;
     STMarca_ocl: TStaticText;
@@ -202,15 +186,11 @@ type
     iva_ocl: TBDEdit;
     importe_total_ocl: TBDEdit;
     tipo_iva_ocl: TBDEdit;
-    ref_transitos_ocl: TBDEdit;
     QOrdenCargaCdes_traspasada_occ: TStringField;
     DBText1: TDBText;
     Shape1: TShape;
     ToolButton1: TToolButton;
-    Label8: TLabel;
-    fecha_transito_ocl: TBDEdit;
     QOrdenCargaLfecha_transito_ocl: TDateField;
-    BCBFecha_transito_ocl: TBCalendarButton;
     lblDestino: TLabel;
     centro_destino_occ: TBDEdit;
     BGBCentro_destino_occ: TBGridButton;
@@ -334,6 +314,13 @@ type
     StringField33: TStringField;
     StringField34: TStringField;
     QPackingList: TQuery;
+    Label7: TLabel;
+    es_peso_real_ocl: TDBCheckBox;
+    qryPesoReal: TQuery;
+    qryLineaOrdenes_peso_real_ocl: TIntegerField;
+    QOrdenCargaLes_peso_real_ocl: TIntegerField;
+    QOrdenCargaLkilos_reales_ocl: TFloatField;
+    qryLineaOrdenkilos_reales_ocl: TFloatField;
     n_pedido_bonnysa_occ: TBDEdit;
     QOrdenCargaCn_pedido_bonnysa_occ: TStringField;
     tbImportar: TToolButton;
@@ -371,7 +358,6 @@ type
     procedure marca_oclChange(Sender: TObject);
     procedure categoria_oclChange(Sender: TObject);
     procedure color_oclChange(Sender: TObject);
-    procedure centro_origen_oclChange(Sender: TObject);
     procedure BGBEmpresa_occClick(Sender: TObject);
     procedure BGBCentro_occClick(Sender: TObject);
     procedure BGBCliente_sal_occClick(Sender: TObject);
@@ -381,7 +367,6 @@ type
     procedure QOrdenCargaCBeforePost(DataSet: TDataSet);
     procedure QOrdenCargaLBeforePost(DataSet: TDataSet);
     procedure QOrdenCargaLAfterEdit(DataSet: TDataSet);
-    procedure BGBCentro_origen_oclClick(Sender: TObject);
     procedure BGBProducto_oclClick(Sender: TObject);
     procedure BGBEnvase_oclClick(Sender: TObject);
     procedure BGBMarca_oclClick(Sender: TObject);
@@ -400,7 +385,6 @@ type
     procedure mnuFiltroClick(Sender: TObject);
     procedure btnActivarClick(Sender: TObject);
     procedure btnFinalizarClick(Sender: TObject);
-    procedure BCBFecha_transito_oclClick(Sender: TObject);
     procedure BGBCentro_destino_occClick(Sender: TObject);
     procedure centro_destino_occChange(Sender: TObject);
     procedure btnCrearAlbaranClick(Sender: TObject);
@@ -445,6 +429,9 @@ type
     function ObtenerUnidadPrecio(AEmpresa, ACliente, AProducto, AEnvase: string): String;
     procedure tbImportarClick(Sender: TObject);
     procedure PDetalleEnter(Sender: TObject);
+    procedure QOrdenCargaLBeforeInsert(DataSet: TDataSet);
+    procedure QOrdenCargaLBeforeEdit(DataSet: TDataSet);
+    procedure hora_occExit(Sender: TObject);  
     procedure DSMaestroStateChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure producto_oclExit(Sender: TObject);
@@ -506,6 +493,8 @@ type
 
     function NumVersion: string;
 
+    function  EsPesoReal( const AEmpresa, ACentro, AProducto: string ): Boolean;
+
   public
 
     procedure RecalcularUnidades( const ASender: TObject; const AImporte: boolean = false );
@@ -519,9 +508,9 @@ implementation
 {$R *.DFM}
 
 uses UFFiltro, UFCalendario, UFRejilla, UFTransportistas,  UFClientes,
-     UDDescripciones, UDTraspasar, UQOrdenCompleta, Math, UFResumen,
+     UDDescripciones, UQOrdenCompleta, Math, UFResumen,
      bCalculadora, UFSuministros, UFDistribuirPeso, UQOrdenPackingSimple,
-     UFAsignarAlbaran, UFAsignarTransito, bMath, bTextUtils, CGlobal;
+     UFAsignarAlbaran, UFAsignarTransito, bMath, bTextUtils, CGlobal, UDTraspasar ;
 
 function TFOrdenCarga.NumVersion: string;
 var
@@ -810,17 +799,12 @@ begin
     PonFecha( self, AControl, SAux, sAux );
   end
   else
-  if AControl.Name = fecha_transito_ocl.Name then
-  begin
-    PonFecha( self, AControl, SAux, sAux );
-  end
-  else
   if AControl.Name = empresa_occ.Name then
   begin
     SeleccionaEmpresa( self, AControl, SAux );
   end
   else
-  if ( AControl.Name = centro_salida_occ.Name ) or ( AControl.Name = centro_origen_ocl.Name ) or
+  if ( AControl.Name = centro_salida_occ.Name ) or 
      ( AControl.Name = centro_destino_occ.Name )then
   begin
     SeleccionaCentro( self, AControl, empresa_occ.Text, SAux );
@@ -1485,10 +1469,10 @@ begin
       SQL.Add(' select * from frf_clientes_comercial    ');
       //SQL.Add('   where cod_empresa_cc = :empresa ');
       SQL.Add('     where cod_cliente_cc = :cliente   ');
-      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, today) '); //' + QuotedStr(fecha_occ.Text) + ') ');
+//      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, today) '); //' + QuotedStr(fecha_occ.Text) + ') ');
       //ParamByName('empresa').AsString := QOrdenCargaCempresa_occ.AsString;
       ParamByName('cliente').AsString := cliente_sal_occ.Text;
-      ParamByName('fecha').AsString := fecha_occ.Text;
+//      ParamByName('fecha').AsString := fecha_occ.Text;
       Open;
 
       if isEmpty then
@@ -1623,6 +1607,12 @@ begin
   tbImportar.Enabled := btnLocalizar.Enabled;
 end;
 
+procedure TFOrdenCarga.hora_occExit(Sender: TObject);
+begin
+  if Length(hora_occ.Text) = 4 then
+    hora_occ.Text := '0' + hora_occ.Text;
+end;
+
 procedure TFOrdenCarga.DesHabilitarBarra;
 begin
   btnAlta.Enabled:= False;
@@ -1702,17 +1692,11 @@ begin
 
   if EstadoActual = kNuevoDetalle then
   begin
-    if ref_transitos_ocl.CanFocus then
+    if producto_ocl.CanFocus then
     begin
-      ref_transitos_ocl.SetFocus
-    end
-    else
-    begin
-      if producto_ocl.CanFocus then
-      begin
-        producto_ocl.SetFocus
-      end;
+      producto_ocl.SetFocus
     end;
+
     rKilosAnterior:= 0;
   end
   else
@@ -2142,12 +2126,8 @@ begin
   SToperador_transporte_occ.Caption:= DDescripciones.desTransporte( empresa_occ.Text, operador_transporte_occ.Text );
 end;
 
-procedure TFOrdenCarga.centro_origen_oclChange(Sender: TObject);
-begin
-  STCentro_origen_ocl.Caption:= DDescripciones.desCentro( empresa_occ.Text, centro_origen_ocl.Text );
-end;
-
 procedure TFOrdenCarga.producto_oclChange(Sender: TObject);
+var bEsPesoReal: boolean;
 begin
   //SÓLO SE REALIZARA EL CODIGO SI LA TABLA ES EDITABLE
   //if ((DSDetalle.State <> dsEdit) and (DSDetalle.State <> dsInsert)) then
@@ -2159,6 +2139,20 @@ begin
 
   if envase_ocl.Text <> '' then
     envase_oclChange( envase_ocl );
+  if producto_ocl.Text <> '' then
+  begin
+    bEsPesoReal := EsPesoReal (  empresa_occ.Text, centro_salida_occ.Text, producto_ocl.Text );
+    es_peso_real_ocl.Enabled := bEsPesoReal;
+    es_peso_real_ocl.checked := bEsPesoReal;
+    Label7.Enabled := bEsPesoReal;
+    if ( QOrdenCargaL.State = dsInsert ) then
+    begin
+    if es_peso_real_ocl.Checked then
+      QOrdenCargaL.FieldByName('es_peso_real_ocl').AsInteger:= 1
+    else
+      QOrdenCargaL.FieldByName('es_peso_real_ocl').AsInteger:= 0;
+    end;
+  end;  
 end;
 
 procedure TFOrdenCarga.producto_oclExit(Sender: TObject);
@@ -2179,8 +2173,8 @@ begin
     SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
     SQL.Add(' where cod_cliente_cc = :cliente ');
     SQL.Add(' and cod_producto_cc = :producto ');
-    SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
-    ParamByName('fecha').asDateTime := AFecha;
+//    SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+//    ParamByName('fecha').asDateTime := AFecha;
     ParamByName('cliente').asString := cliente_sal_occ.Text;
     ParamByName('producto').asString := producto_ocl.Text;
     Open;
@@ -2194,8 +2188,9 @@ begin
       SQL.Clear;
       SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
       SQL.Add(' where cod_producto_cc = :producto');
-      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
-      ParamByName('fecha').asDateTime := AFecha;
+      SQL.Add('   and cod_cliente_cc is null     ');
+//      SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+//      ParamByName('fecha').asDateTime := AFecha;
       ParamByName('producto').asString := producto_ocl.Text;
       Open;
     end;
@@ -2209,8 +2204,9 @@ begin
         SQL.Clear;
         SQL.Add(' select cod_comercial_cc from frf_clientes_comercial ');
         SQL.Add(' where cod_cliente_cc = :cliente');
-        SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
-        ParamByName('fecha').asDateTime := AFecha;
+        SQL.Add('   and cod_producto_cc is null  ');
+//        SQL.Add(' and :fecha between fecha_ini_cc and nvl(fecha_fin_cc, ' + QuotedStr(datetostr(AFecha)) + ')');
+//        ParamByName('fecha').asDateTime := AFecha;
         ParamByName('cliente').asString := cliente_sal_occ.Text;
         Open;
       end;
@@ -2302,6 +2298,36 @@ begin
       envase_ocl.Text := 'COM-' + Rellena( envase_ocl.Text, 5, '0');
 end;
 
+function TFOrdenCarga.EsPesoReal(const AEmpresa, ACentro, AProducto: string): Boolean;
+begin
+  if cliente_sal_occ.Text <> '' then
+    result := false
+  else
+  begin
+    with qryPesoReal do
+    begin
+      SQL.Clear;
+      SQL.Add(' select * from frf_transito_peso_real ');
+      SQL.Add('  where empresa_tp = :empresa ');
+      SQL.Add('    and centro_tp = :centro ');
+      SQL.Add('    and producto_tp = :producto ');
+      ParamByName('empresa').AsString:= AEmpresa;
+      ParamByName('centro').AsString:= ACentro;
+      ParamByName('producto').AsString:= AProducto;
+      Open;
+      try
+        if not IsEmpty then
+          result := true
+        else
+          result := false;
+
+      finally
+        Close;
+      end;
+    end;
+  end;
+end;
+
 procedure TFOrdenCarga.marca_oclChange(Sender: TObject);
 begin
   STMarca_ocl.Caption:= DDescripciones.desMarca( marca_ocl.Text );
@@ -2358,6 +2384,7 @@ end;
 procedure TFOrdenCarga.InsertarLineasOrden (AComercial: String);
 var iNumLinea: integer;
     sDescripcion: string;
+    bEsPesoReal: boolean;
 begin
 
   rImpuestosActual:= DOrdenCarga.ImpuestosCliente( empresa_occ.Text, centro_salida_occ.Text,
@@ -2389,7 +2416,7 @@ begin
           sql.Add(' (orden_ocl, linea_ocl, empresa_ocl, centro_salida_ocl, n_albaran_ocl, fecha_ocl, centro_origen_ocl, producto_ocl, envase_ocl, ');
           sql.Add('  marca_ocl, categoria_ocl, calibre_ocl, color_ocl, unidades_caja_ocl, cajas_ocl, kilos_ocl,   ');
           sql.Add('  precio_ocl, unidad_precio_ocl, importe_neto_ocl, porc_iva_ocl, iva_ocl, importe_total_ocl, n_palets_ocl, tipo_palets_ocl, tipo_iva_ocl, ');
-          sql.Add('  cliente_ocl, emp_procede_ocl, kilos_packing_ocl, cajas_packing_ocl, palets_packing_ocl, comercial_ocl  ');
+          sql.Add('  cliente_ocl, emp_procede_ocl, kilos_packing_ocl, cajas_packing_ocl, palets_packing_ocl, comercial_ocl, es_peso_real_ocl, kilos_reales_ocl  ');
 //Opcionales
 //          SQl.Add(' formato_cliente_ocl ');
 //          SQL.Add(' ref_transitos_ocl, fecha_transito_ocl, ');
@@ -2401,7 +2428,7 @@ begin
           sql.Add(' (:orden_ocl, :linea_ocl, :empresa_ocl, :centro_salida_ocl, :n_albaran_ocl, :fecha_ocl, :centro_origen_ocl, :producto_ocl, :envase_ocl,      ');
           sql.Add('  :marca_ocl, :categoria_ocl, :calibre_ocl, :color_ocl, :unidades_caja_ocl, :cajas_ocl, :kilos_ocl,        ');
           sql.Add('  :precio_ocl, :unidad_precio_ocl, :importe_neto_ocl, :porc_iva_ocl, :iva_ocl, :importe_total_ocl, :n_palets_ocl, :tipo_palets_ocl, :tipo_iva_ocl, ');
-          sql.Add('  :cliente_ocl, :emp_procede_ocl, :kilos_packing_ocl, :cajas_packing_ocl, :palets_packing_ocl, :comercial_ocl                                      ');
+          sql.Add('  :cliente_ocl, :emp_procede_ocl, :kilos_packing_ocl, :cajas_packing_ocl, :palets_packing_ocl, :comercial_ocl, :es_peso_real_ocl, :kilos_reales_ocl                   ');
 //Opcionales
 //          SQl.Add(' :formato_cliente_ocl ');
 //          SQL.Add(' :ref_transitos_ocl, :fecha_transito_ocl, ');
@@ -2429,7 +2456,8 @@ begin
           ParamByName('unidades_caja_ocl').AsInteger:= QPackingList.FieldByName('unidades_caja_pl').AsInteger;
           ParamByName('cajas_ocl').AsInteger:= QPackingList.FieldByName('cajas_pl').AsInteger;
 
-          if bPesoVariableLinea then
+          bEsPesoReal := EsPesoReal (  QOrdenCargaC.FieldByName('empresa_occ').AsString, QOrdenCargaC.FieldByName('centro_salida_occ').AsString, QPackingList.FieldByName('producto_pl').AsString );
+          if (bPesoVariableLinea) or (bEsPesoReal) then
             ParamByName('kilos_ocl').AsFloat:= QPackingList.FieldByName('peso_pl').AsFloat
           else
             ParamByName('kilos_ocl').AsFloat:= QPackingList.FieldByName('cajas_pl').AsFloat * rPesoCaja;
@@ -2464,6 +2492,12 @@ begin
           ParamByName('cajas_packing_ocl').AsInteger:= QPackingList.FieldByName('cajas_pl').AsInteger;
           ParamByName('palets_packing_ocl').AsInteger:= QPackingList.FieldByName('palets_pl').AsInteger;
           ParamByName('comercial_ocl').AsString:= AComercial;
+          if bEsPesoReal then
+            ParamByName('es_peso_real_ocl').AsInteger := 1
+          else
+            ParamByName('es_peso_real_ocl').AsInteger := 0;
+          ParamByName('kilos_reales_ocl').Asfloat:= QPackingList.FieldByName('peso_pl').AsFloat;
+
 //          ParamByName('notas_ocl').AsString:= null;
 
           ExecSQL;
@@ -2591,15 +2625,6 @@ begin
     fecha_occ.Text:= sAux;
 end;
 
-procedure TFOrdenCarga.BCBFecha_transito_oclClick(Sender: TObject);
-var
-  sAux: String;
-begin
-  sAux:= fecha_transito_ocl.Text;
-  if PonFecha( self, fecha_transito_ocl, fecha_transito_ocl.Text, sAux ) then
-    fecha_transito_ocl.Text:= sAux;
-end;
-
 procedure TFOrdenCarga.BGBCliente_sal_occClick(Sender: TObject);
 var
   sAux: String;
@@ -2634,15 +2659,6 @@ begin
   sAux:= operador_transporte_occ.Text;
   if SeleccionaTransportista( self, operador_transporte_occ, empresa_occ.text, sAux ) then
     operador_transporte_occ.Text:= sAux;
-end;
-
-procedure TFOrdenCarga.BGBCentro_origen_oclClick(Sender: TObject);
-var
-  sAux: String;
-begin
-  sAux:= Centro_origen_ocl.Text;
-  if SeleccionaCentro( self, Centro_origen_ocl, empresa_occ.text, sAux ) then
-    Centro_origen_ocl.Text:= sAux;
 end;
 
 procedure TFOrdenCarga.BGBProducto_oclClick(Sender: TObject);
@@ -2896,10 +2912,24 @@ begin
   end;
 end;
 
+procedure TFOrdenCarga.QOrdenCargaLBeforeEdit(DataSet: TDataSet);
+begin
+  es_peso_real_ocl.enabled := EsPesoReal (  empresa_occ.Text, centro_salida_occ.Text, producto_ocl.Text );
+  Label7.enabled := EsPesoReal (  empresa_occ.Text, centro_salida_occ.Text, producto_ocl.Text );
+end;
+
+procedure TFOrdenCarga.QOrdenCargaLBeforeInsert(DataSet: TDataSet);
+begin
+  es_peso_real_ocl.Enabled := false;
+  es_peso_real_ocl.Checked := false;
+  Label7.Enabled := false;
+end;
+
 procedure TFOrdenCarga.QOrdenCargaLBeforePost(DataSet: TDataSet);
 var
   sMsg: String;
 begin
+{
   if Trim( centro_origen_ocl.Text ) = '' then
   begin
     ShowMessage('El centro de origen es de obligada inserción.');
@@ -2907,7 +2937,7 @@ begin
       centro_origen_ocl.SetFocus;
     Abort;
   end;
-
+}
   if Trim( producto_ocl.Text ) = '' then
   begin
     ShowMessage('El producto es de obligada inserción.');
@@ -3064,9 +3094,11 @@ begin
   end;
 
   QOrdenCargaLemp_procede_ocl.AsString:= QOrdenCargaCempresa_occ.AsString;
+{
   //Transito correcto
-  if Trim( ref_transitos_ocl.Text ) <> '' then
+  if Trim( ref_transito_ocl.Text ) <> '' then
   begin
+
     if centro_origen_ocl.Text = '' then
     begin
       ShowMessage( 'Para identificar el tránsito es necesario el centro, número de referencia y fecha.');
@@ -3081,6 +3113,7 @@ begin
         fecha_transito_ocl.SetFocus;
       Abort;
     end;
+
     if not DOrdenCarga.EsTransitoCorrecto( empresa_occ.Text, centro_origen_ocl.Text, StrToIntDef(ref_transitos_ocl.Text,0),
          StrToDateDef(fecha_transito_ocl.Text, Date), producto_ocl.Text, strToFloatDef( kilos_ocl.Text, 0 ), rKilosAnterior, sMsg ) then
     begin
@@ -3111,7 +3144,7 @@ begin
       Abort;
     end;
   end;
-
+}
   //Integridad con el packing list
   if QOrdenCargaL.State = dsEdit then
   if not DOrdenCarga.ComprobarIntegridadLinea( QOrdenCargaLorden_ocl.AsInteger, QOrdenCargaLlinea_ocl.AsInteger,
@@ -3173,7 +3206,6 @@ begin
   QOrdenCargaLn_palets_ocl.AsInteger:= 1;
 
   QOrdenCargaLcentro_origen_ocl.AsString:= QOrdenCargaCcentro_salida_occ.AsString;
-  centro_origen_ocl.Text:= centro_salida_occ.Text;
 
   bFlagCambios:= True;
   RecalcularUnidades( envase_ocl );
@@ -3301,6 +3333,7 @@ end;
 
 procedure TFOrdenCarga.ref_transitos_oclChange(Sender: TObject);
 begin
+{
   if QOrdenCargaL.State in [dsInsert, dsEdit] then
   begin
     if Trim(ref_transitos_ocl.Text) <> '' then
@@ -3314,6 +3347,7 @@ begin
   end;
   (*TODO*)
   (*EXTRAER LA FECHA Y CENTRO DEL TRANSITO*)
+}
 end;
 
 procedure TFOrdenCarga.btnResumenClick(Sender: TObject);
