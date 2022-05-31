@@ -462,7 +462,7 @@ end;
 function TDOrdenCarga.TipoIVAEnvase(const AEmpresa, AEnvase, AProducto: string ): Integer;
 begin
   QAux.SQL.Clear;
-  QAux.SQL.Add('select nvl(tipo_iva_e,0) tipo_iva_e ');
+  QAux.SQL.Add('select nvl(tipo_iva_e, 0) tipo_iva_e ');
   QAux.SQL.Add('from frf_envases ');
   QAux.SQL.Add('where producto_e = :producto ');
   QAux.SQL.Add('and envase_e = :envase ');
